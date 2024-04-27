@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: gemini-service
+  threads:
+    virtual:
+      enabled: true
+
+spring.data.mongodb:
+  uri: mongodb+srv://gemini_admin:${DB_PASSWORD}@geminidb.k7qyms9.mongodb.net/?retryWrites=true&w=majority&appName=GeminiDB
+  database: gemini-db
+
+logging.level:
+  dev.cah1r: info
+  org.springframework.data.mongodb.core.ReactiveMongoTemplate: DEBUG

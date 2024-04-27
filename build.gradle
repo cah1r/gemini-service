@@ -8,7 +8,7 @@ group = 'dev.cah1r'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '22'
+	sourceCompatibility = '21'
 }
 
 configurations {
