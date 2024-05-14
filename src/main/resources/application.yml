@@ -6,9 +6,9 @@ spring:
       enabled: true
 
 spring.data.mongodb:
-  uri: mongodb+srv://gemini_admin:${DB_PASSWORD}@geminidb.k7qyms9.mongodb.net/?retryWrites=true&w=majority&appName=GeminiDB
+  uri: mongodb+srv://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/?retryWrites=true&w=majority&appName=GeminiDB
   database: gemini-db
 
 logging.level:
   dev.cah1r: info
-  org.springframework.data.mongodb.core.ReactiveMongoTemplate: DEBUG
+  org.springframework.data.mongodb.core.ReactiveMongoTemplate: INFO

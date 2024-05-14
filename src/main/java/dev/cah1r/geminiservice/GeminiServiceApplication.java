@@ -10,8 +10,7 @@ import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRep
 @EnableReactiveMongoRepositories
 public class GeminiServiceApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(GeminiServiceApplication.class, args);
-	}
-
+  public static void main(String[] args) {
+    SpringApplication.run(GeminiServiceApplication.class, args);
+  }
 }

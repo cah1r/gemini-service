@@ -1,12 +1,14 @@
 package dev.cah1r.geminiservice.transit;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document("trips")
 public record Trip(
-       LocalDateTime startDateTime,
-       Route route,
-       int totalTickets,
-       int availableTickets,
-       BigInteger price
-) {}
+    @Id String id,
+    LocalDateTime startDateTime,
+    LocalDateTime arrivalDateTime,
+    Route route,
+    int totalTickets,
+    int availableTickets) {}
