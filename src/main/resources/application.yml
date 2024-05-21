@@ -4,6 +4,24 @@ spring:
   threads:
     virtual:
       enabled: true
+  datasource:
+    username: sa
+    url: jdbc:h2:mem:keycloakdb;DB_CLOSE_ON_EXIT=FALSE
+  jpa:
+    defer-datasource-initialization: true
+    open-in-view: false
+  security:
+    oauth2:
+      client:
+        registration:
+          gemini-service:
+            client-id: gemini-service
+            client-secret: ${OAUTH_CLIENT_SECRET}
+            authorization-grant-type: authorization_code
+            scope: openid
+        provider:
+          gemini-service:
+            issuer-uri: http://localhost:8081/realms/gemini
 
 spring.data.mongodb:
   uri: mongodb+srv://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/?retryWrites=true&w=majority&appName=GeminiDB

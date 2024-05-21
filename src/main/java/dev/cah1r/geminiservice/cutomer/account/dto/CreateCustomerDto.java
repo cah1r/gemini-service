@@ -6,6 +6,7 @@ public record CreateCustomerDto(
     @Nonnull String firstName,
     @Nonnull String lastName,
     @Nonnull String email,
+//    @Nonnull String password,
     @Nonnull Integer phoneNumber,
     String companyName,
     String street,

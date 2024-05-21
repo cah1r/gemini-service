@@ -1,25 +1,30 @@
 package dev.cah1r.geminiservice.cutomer.account;
 
-import static lombok.AccessLevel.PRIVATE;
 
 import dev.cah1r.geminiservice.cutomer.account.dto.CreateCustomerDto;
 import dev.cah1r.geminiservice.cutomer.account.dto.CustomerDataDto;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
-@NoArgsConstructor(access = PRIVATE)
+@Component
+@RequiredArgsConstructor
 class CustomerMapper {
 
-  static Customer toCustomer(CreateCustomerDto createCustomerDto) {
+  private final PasswordEncoder passwordEncoder;
+
+  Customer toCustomer(CreateCustomerDto createCustomerDto) {
     return Customer.builder()
         .firstName(createCustomerDto.firstName())
         .lastName(createCustomerDto.lastName())
         .email(createCustomerDto.email())
+//        .password(passwordEncoder.encode(createCustomerDto.password()))
         .phoneNumber(createCustomerDto.phoneNumber())
         .address(createAddress(createCustomerDto))
         .build();
   }
 
-  private static Address createAddress(CreateCustomerDto createCustomerDto) {
+  private Address createAddress(CreateCustomerDto createCustomerDto) {
     return Address.builder()
         .street(createCustomerDto.street())
         .buildingNo(createCustomerDto.buildingNo())

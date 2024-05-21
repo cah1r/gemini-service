@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/admin/tools/bus-stop")
+@RequestMapping("/api/v1/admin/bus-stop")
 @RequiredArgsConstructor
 public class BusStopController {
 

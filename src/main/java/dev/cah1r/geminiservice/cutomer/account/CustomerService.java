@@ -1,6 +1,5 @@
 package dev.cah1r.geminiservice.cutomer.account;
 
-import static dev.cah1r.geminiservice.cutomer.account.CustomerMapper.toCustomer;
 import static java.lang.Boolean.FALSE;
 
 import dev.cah1r.geminiservice.cutomer.account.dto.CreateCustomerDto;
@@ -8,10 +7,8 @@ import dev.cah1r.geminiservice.cutomer.account.dto.CustomerDataDto;
 import dev.cah1r.geminiservice.cutomer.account.dto.EditCustomerDataDto;
 import dev.cah1r.geminiservice.error.exception.CustomerAlreadyExistsException;
 import dev.cah1r.geminiservice.error.exception.CustomerNotFoundException;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
@@ -30,6 +27,7 @@ class CustomerService {
 
   private final CustomerRepository customerRepository;
   private final ReactiveMongoTemplate reactiveMongoTemplate;
+  private final CustomerMapper mapper;
 
   Mono<CustomerDataDto> createCustomer(CreateCustomerDto createCustomerDto) {
     return customerRepository
@@ -41,7 +39,7 @@ class CustomerService {
 
   private Mono<CustomerDataDto> saveCustomerInDb(CreateCustomerDto createCustomerDto) {
     return customerRepository
-        .save(toCustomer(createCustomerDto))
+        .save(mapper.toCustomer(createCustomerDto))
         .map(CustomerMapper::toCustomerDataDto)
         .doOnNext(customer -> log.info("Saved customer in database with email: {} and id: {}", customer.email(), customer.id()))
         .doOnError(err -> log.error("Could not save in database customer: {}", createCustomerDto, err));
