@@ -47,6 +47,10 @@ public class SecurityConfig {
                     .authenticated())
         .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
 
+    //TODO: hsts (tls ver.)
+    //TODO: xss
+    //TODO: csrf
+
     return http.build();
   }
 
