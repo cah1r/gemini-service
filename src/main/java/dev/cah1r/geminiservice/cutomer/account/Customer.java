@@ -22,8 +22,7 @@ class Customer {
     @NonNull private String firstName;
     @NonNull private String lastName;
     @NonNull private String email;
-//    @NonNull private String password;
-    @NonNull private Integer phoneNumber;
+    private Integer phoneNumber;
     @Setter private Address address;
     @CreatedDate private LocalDateTime createdTimestamp;
     @LastModifiedDate private LocalDateTime updatedTimestamp;

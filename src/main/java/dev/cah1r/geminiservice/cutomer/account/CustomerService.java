@@ -113,4 +113,11 @@ class CustomerService {
   Flux<Customer> getAllCustomers() {
     return customerRepository.findAll();
   }
+
+  Mono<CustomerDataDto> createCustomerUsingGoogle(CreateCustomerDto createCustomerDto) {
+    return customerRepository
+            .findCustomerByEmail(createCustomerDto.email())
+            .map(CustomerMapper::toCustomerDataDto)
+            .switchIfEmpty(createCustomer(createCustomerDto));
+  }
 }

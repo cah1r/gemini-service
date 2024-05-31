@@ -15,9 +15,14 @@ class CustomerController {
     
     private final CustomerService customerService;
     
-    @PostMapping
+    @PostMapping("/createUser")
     Mono<CustomerDataDto> createCustomer(@RequestBody CreateCustomerDto createCustomerDto) {
         return customerService.createCustomer(createCustomerDto);
+    }
+
+    @PostMapping("/createGoogleUser")
+    Mono<CustomerDataDto> createGoogleUSer(@RequestBody CreateCustomerDto createCustomerDto) {
+        return customerService.createCustomerUsingGoogle(createCustomerDto);
     }
 
     @PutMapping
