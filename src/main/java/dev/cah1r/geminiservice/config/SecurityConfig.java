@@ -22,7 +22,6 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -71,9 +70,11 @@ public class SecurityConfig {
   }
 
   @Bean
-  public CsrfTokenRepository csrfTokenRepository() {
+  public CookieCsrfTokenRepository csrfTokenRepository() {
     var cookieRepo = CookieCsrfTokenRepository.withHttpOnlyFalse();
     cookieRepo.setCookiePath("/");
+    cookieRepo.setCookieCustomizer(cookie -> cookie.sameSite("Strict"));
+
     return cookieRepo;
   }
 
