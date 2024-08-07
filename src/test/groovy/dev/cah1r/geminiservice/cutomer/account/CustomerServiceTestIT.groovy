@@ -13,6 +13,7 @@ import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.MongoDBContainer
 import spock.lang.Specification
 import spock.lang.Stepwise
+import spock.lang.Unroll
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
@@ -40,18 +41,15 @@ class CustomerServiceTestIT extends Specification {
         mongoDBContainer.start()
     }
 
-    def setup() {
-        customerRepository.deleteAll().block()
-    }
-
-    def 'should create new customer using Google with only email present'() {
+    @Unroll
+    def 'should create new customer from endpoint #endpoint'(String endpoint) {
 
         given: 'mocked endpoint and customer data to create a new customer'
-        def endpoint = "http://localhost:$port/api/v1/customer/createGoogleUser"
-        def createCustomerDto = new CreateCustomerDto('test@example.com', null)
+        def url = "http://localhost:$port/api/v1/customer/$endpoint"
+        def createCustomerDto = new CreateCustomerDto('test@example.com', 123456789)
 
         when: 'the endpoint is called'
-        def response = restTemplate.postForEntity(endpoint, createCustomerDto, CreateCustomerDto)
+        def response = restTemplate.postForEntity(url, createCustomerDto, CreateCustomerDto)
 
         then: 'the response status is OK and the customer is created'
         response.getStatusCode() == HttpStatus.OK
@@ -62,6 +60,10 @@ class CustomerServiceTestIT extends Specification {
         def savedCustomer = customerRepository.findCustomerByEmail(createCustomerDto.email()).block()
         savedCustomer != null
         savedCustomer.email == createCustomerDto.email()
+        savedCustomer.phoneNumber == createCustomerDto.phoneNumber()
+
+        where:
+        endpoint << ["signInWithGoogle", "createUser"]
     }
 
     def cleanup() {
