@@ -1,0 +1,6 @@
+<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+    <param name="Target" value="System.out" />
+    <layout class="com.jcabi.log.MulticolorLayout">
+        <param name="ConversionPattern" value="[%color{%p}] %m%n" />
+    </layout>
+</appender>
