@@ -24,6 +24,9 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 class CustomerService {
+  
+  private static final String UPDATED_TSP_LABEL = "updatedTimestamp";
+  private static final String EMAIL_LABEL = "email";
 
   private final CustomerRepository customerRepository;
   private final ReactiveMongoTemplate reactiveMongoTemplate;
@@ -46,7 +49,7 @@ class CustomerService {
   }
 
   Mono<Customer> updateCustomer(String currentEmail, EditCustomerDataDto editCustomerDataDto) {
-    Query query = new Query().addCriteria(Criteria.where("email").is(currentEmail));
+    Query query = new Query().addCriteria(Criteria.where(EMAIL_LABEL).is(currentEmail));
     Update updateDefinition = getCustomerUpdateDefinition(editCustomerDataDto);
     FindAndModifyOptions options = new FindAndModifyOptions().returnNew(true).upsert(false);
 
@@ -61,14 +64,14 @@ class CustomerService {
     return new Update()
         .set("firstName", editCustomerDataDto.firstName())
         .set("lastName", editCustomerDataDto.lastName())
-        .set("email", editCustomerDataDto.email())
+        .set(EMAIL_LABEL, editCustomerDataDto.email())
         .set("phoneNumber", editCustomerDataDto.phoneNumber())
-        .set("updatedTimestamp", LocalDateTime.now());
+        .set(UPDATED_TSP_LABEL, LocalDateTime.now());
   }
 
   Mono<Customer> removeCustomerAddress(String email) {
-    Query query = new Query().addCriteria(Criteria.where("email").is(email));
-    Update updateDefinition = new Update().unset("address").set("updatedTimestamp", LocalDateTime.now());
+    Query query = new Query().addCriteria(Criteria.where(EMAIL_LABEL).is(email));
+    Update updateDefinition = new Update().unset("address").set(UPDATED_TSP_LABEL, LocalDateTime.now());
     FindAndModifyOptions options = new FindAndModifyOptions().returnNew(true).upsert(false);
 
     return reactiveMongoTemplate
@@ -79,7 +82,7 @@ class CustomerService {
   }
 
   Mono<Customer> addCustomerAddress(String email, Address address) {
-    Query query = new Query().addCriteria(Criteria.where("email").is(email));
+    Query query = new Query().addCriteria(Criteria.where(EMAIL_LABEL).is(email));
     Update updateDefinition = getAddressUpdateDefinition(address);
     FindAndModifyOptions options = new FindAndModifyOptions().returnNew(true).upsert(false);
 
@@ -102,7 +105,7 @@ class CustomerService {
         .set("address.apartmentNo", address.apartmentNo())
         .set("address.buildingNo", address.buildingNo())
         .set("address.zipCode", address.zipCode())
-        .set("updatedTimestamp", LocalDateTime.now());
+        .set(UPDATED_TSP_LABEL, LocalDateTime.now());
 
     Optional.ofNullable(address.nip()).ifPresent(nip -> updateDefinition.set("address.nip", nip));
     Optional.ofNullable(address.companyName()).ifPresent(nip -> updateDefinition.set("address.companyName", nip));
@@ -114,9 +117,10 @@ class CustomerService {
     return customerRepository.findAll();
   }
 
-  Mono<CustomerDataDto> createCustomerUsingGoogle(CreateCustomerDto createCustomerDto) {
+  Mono<CustomerDataDto> signInWithGoogle(CreateCustomerDto createCustomerDto) {
     return customerRepository
             .findCustomerByEmail(createCustomerDto.email())
+            .doOnNext(customer -> log.info("User {} has been logged", customer.getEmail()))
             .map(CustomerMapper::toCustomerDataDto)
             .switchIfEmpty(createCustomer(createCustomerDto));
   }
