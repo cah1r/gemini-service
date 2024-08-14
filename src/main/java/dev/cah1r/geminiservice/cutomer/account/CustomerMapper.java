@@ -11,8 +11,14 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 class CustomerMapper {
 
+  private final PasswordService passwordService;
+
   Customer toCustomer(CreateCustomerDto createCustomerDto) {
-    var customer = Customer.builder().email(createCustomerDto.email());
+    var customer =
+            Customer.builder()
+                .email(createCustomerDto.email())
+                .password(passwordService.encryptPassword(createCustomerDto.password()));
+
     ofNullable(createCustomerDto.phoneNumber()).ifPresent(customer::phoneNumber);
 
     return customer.build();
@@ -28,5 +34,14 @@ class CustomerMapper {
         .activeTicketBundles(customer.getTicketBundles())
         .activeTickets(customer.getTickets())
         .build();
+  }
+
+  static CustomerDataDto toCustomerDataDto(GoogleUser googleUser) {
+    return CustomerDataDto.builder()
+            .id(googleUser.getId())
+            .email(googleUser.getEmail())
+            .firstName(googleUser.getFirstName())
+            .lastName((googleUser.getLastName()))
+            .build();
   }
 }

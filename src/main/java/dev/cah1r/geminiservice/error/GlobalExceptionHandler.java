@@ -42,4 +42,16 @@ public class GlobalExceptionHandler {
   public ResponseEntity<String> handleUpdateException(UpdateException ex) {
     return ResponseEntity.status(NOT_FOUND).body(ex.getMessage());
   }
+
+  @ExceptionHandler(InvalidPasswordException.class)
+  public ResponseEntity<String> handleInvalidPasswordException(InvalidPasswordException ex) {
+    log.info(ex.getMessage());
+    return ResponseEntity.status(BAD_REQUEST).body(ex.getMessage());
+  }
+
+  @ExceptionHandler(RouteNotFoundException.class)
+  public ResponseEntity<String> handleRouteNotFoundException(RouteNotFoundException ex) {
+    log.info(ex.getMessage());
+    return ResponseEntity.status(NOT_FOUND).body(ex.getMessage());
+  }
 }

@@ -1,7 +1,7 @@
-package dev.cah1r.geminiservice.transit;
+package dev.cah1r.geminiservice.transit.busstop;
 
-import dev.cah1r.geminiservice.transit.dto.CreateBusStopDto;
-import dev.cah1r.geminiservice.transit.dto.BusStopDto;
+import dev.cah1r.geminiservice.transit.busstop.dto.BusStopDto;
+import dev.cah1r.geminiservice.transit.busstop.dto.GetBusStopDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -10,14 +10,14 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/admin/bus-stop")
+@RequestMapping("/api/v1/bus-stop")
 @RequiredArgsConstructor
-public class BusStopController {
+class BusStopController {
 
   private final BusStopService busStopService;
 
-  @PostMapping
-  Mono<BusStopDto> createBusStop(@RequestBody CreateBusStopDto createBusStopDto) {
+  @PostMapping("/create")
+  Mono<BusStop> createBusStop(@RequestBody CreateBusStopDto createBusStopDto) {
     return busStopService.createBusStop(createBusStopDto);
   }
 
@@ -26,13 +26,13 @@ public class BusStopController {
     return busStopService.deleteBusStop(id);
   }
 
-  @GetMapping("/getAll")
+  @GetMapping("/get-all")
   Flux<BusStopDto> getAllBusStops() {
     return busStopService.getAllBusStops();
   }
 
   @PutMapping("/update")
-  Mono<BusStopDto> updateBusStop(@RequestBody BusStopDto busStopDto) {
+  Mono<BusStop> updateBusStop(@RequestBody BusStopDto busStopDto) {
     return busStopService.updateBusStop(busStopDto);
   }
 }

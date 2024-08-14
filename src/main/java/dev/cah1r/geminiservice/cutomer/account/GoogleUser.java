@@ -7,24 +7,22 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @Builder
-@Document("customers")
-class Customer {
-  @Id private String id;
-  @NonNull private String email;
-  @NonNull private String password;
-  private String firstName;
-  private String lastName;
-  private Integer phoneNumber;
-  @Setter private Address address;
-  private LocalDateTime createdTimestamp;
-  private LocalDateTime updatedTimestamp;
-  @DBRef private List<TicketBundle> ticketBundles;
-  @DBRef private List<Ticket> tickets;
+@Document("users_google")
+public class GoogleUser {
+    @Id private String id;
+    @NonNull private String email;
+    private String firstName;
+    private String lastName;
+    private Integer phoneNumber;
+    private LocalDateTime createdTimestamp;
+    private LocalDateTime updatedTimestamp;
+    private List<String> ticketBundleIds;
+    private List<String> ticketsIds;
+    private String addressId;
 }

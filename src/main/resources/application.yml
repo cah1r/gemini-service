@@ -34,4 +34,6 @@ spring.data.mongodb:
 logging.level:
   org.springframework.security: DEBUG
   dev.cah1r: INFO
-  org.springframework.data.mongodb.core.ReactiveMongoTemplate: INFO
+  org:
+    springframework.data.mongodb.core.ReactiveMongoTemplate: DEBUG
+    mongodb.driver: INFO

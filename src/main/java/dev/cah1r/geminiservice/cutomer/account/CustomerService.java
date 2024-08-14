@@ -5,6 +5,7 @@ import static java.lang.Boolean.FALSE;
 import dev.cah1r.geminiservice.cutomer.account.dto.CreateCustomerDto;
 import dev.cah1r.geminiservice.cutomer.account.dto.CustomerDataDto;
 import dev.cah1r.geminiservice.cutomer.account.dto.EditCustomerDataDto;
+import dev.cah1r.geminiservice.cutomer.account.dto.LoginDataDto;
 import dev.cah1r.geminiservice.error.exception.CustomerAlreadyExistsException;
 import dev.cah1r.geminiservice.error.exception.CustomerNotFoundException;
 import java.time.LocalDateTime;
@@ -24,13 +25,14 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 class CustomerService {
-  
+
   private static final String UPDATED_TSP_LABEL = "updatedTimestamp";
   private static final String EMAIL_LABEL = "email";
 
   private final CustomerRepository customerRepository;
   private final ReactiveMongoTemplate reactiveMongoTemplate;
   private final CustomerMapper mapper;
+  private final PasswordService passwordService;
 
   Mono<CustomerDataDto> createCustomer(CreateCustomerDto createCustomerDto) {
     return customerRepository
@@ -44,7 +46,8 @@ class CustomerService {
     return customerRepository
         .save(mapper.toCustomer(createCustomerDto))
         .map(CustomerMapper::toCustomerDataDto)
-        .doOnNext(customer -> log.info("Saved customer in database with email: {} and id: {}", customer.email(), customer.id()))
+        .doOnNext(customer -> log.info("Saved customer in database with email: {} and id: {}",
+                    customer.email(), customer.id()))
         .doOnError(err -> log.error("Could not save in database customer: {}", createCustomerDto, err));
   }
 
@@ -89,8 +92,7 @@ class CustomerService {
     return saveAddressInDb(email, query, updateDefinition, options);
   }
 
-  private Mono<Customer> saveAddressInDb(
-      String email, Query query, Update updateDefinition, FindAndModifyOptions options) {
+  private Mono<Customer> saveAddressInDb(String email, Query query, Update updateDefinition, FindAndModifyOptions options) {
     return reactiveMongoTemplate
         .findAndModify(query, updateDefinition, options, Customer.class)
         .switchIfEmpty(Mono.error(new CustomerNotFoundException(email)))
@@ -100,12 +102,12 @@ class CustomerService {
 
   private static Update getAddressUpdateDefinition(Address address) {
     Update updateDefinition = new Update()
-        .set("address.street", address.street())
-        .set("address.city", address.city())
-        .set("address.apartmentNo", address.apartmentNo())
-        .set("address.buildingNo", address.buildingNo())
-        .set("address.zipCode", address.zipCode())
-        .set(UPDATED_TSP_LABEL, LocalDateTime.now());
+            .set("address.street", address.street())
+            .set("address.city", address.city())
+            .set("address.apartmentNo", address.apartmentNo())
+            .set("address.buildingNo", address.buildingNo())
+            .set("address.zipCode", address.zipCode())
+            .set(UPDATED_TSP_LABEL, LocalDateTime.now());
 
     Optional.ofNullable(address.nip()).ifPresent(nip -> updateDefinition.set("address.nip", nip));
     Optional.ofNullable(address.companyName()).ifPresent(nip -> updateDefinition.set("address.companyName", nip));
@@ -117,11 +119,11 @@ class CustomerService {
     return customerRepository.findAll();
   }
 
-  Mono<CustomerDataDto> signInWithGoogle(CreateCustomerDto createCustomerDto) {
+  Mono<CustomerDataDto> loginCustomer(LoginDataDto loginData) {
     return customerRepository
-            .findCustomerByEmail(createCustomerDto.email())
-            .doOnNext(customer -> log.info("User {} has been logged", customer.getEmail()))
-            .map(CustomerMapper::toCustomerDataDto)
-            .switchIfEmpty(createCustomer(createCustomerDto));
+        .findCustomerByEmail(loginData.email())
+        .switchIfEmpty(Mono.error(new CustomerNotFoundException(loginData.email())))
+        .doOnNext(user -> passwordService.validatePassword(loginData, user.getPassword()))
+        .map(CustomerMapper::toCustomerDataDto);
   }
 }

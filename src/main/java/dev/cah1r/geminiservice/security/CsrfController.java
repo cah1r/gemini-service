@@ -9,11 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequestMapping("/api/v1")
 @RestController
-class TokenController {
+class CsrfController {
 
   @PostMapping("/csrf")
   ResponseEntity<String> getToken() {
-    log.info("CSRF token endpoint invoked");
     return ResponseEntity.ok().build();
   }
 }

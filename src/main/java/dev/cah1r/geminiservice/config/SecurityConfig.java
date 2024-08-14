@@ -1,11 +1,6 @@
 package dev.cah1r.geminiservice.config;
 
 import com.nimbusds.jose.shaded.gson.internal.LinkedTreeMap;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -26,6 +22,12 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Configuration
@@ -48,11 +50,13 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/api/v1/admin/**").hasRole("admin")
                     .anyRequest()
-                    .permitAll())
-        .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+                    .permitAll());
+    http.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
 
     // TODO: hsts (tls ver.)
     // TODO: xss
+//    http.cors().disable();
+//    http.csrf().disable();
 
     return http.build();
   }
@@ -61,7 +65,7 @@ public class SecurityConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowedOrigins(List.of("http://localhost:4200"));
-    configuration.setAllowedMethods(List.of("GET", "POST", "OPTIONS", "PUT", "DELETE"));
+    configuration.setAllowedMethods(List.of("GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH"));
     configuration.setAllowedHeaders(List.of("X-XSRF-TOKEN", "Content-Type"));
     configuration.setAllowCredentials(true);
 
@@ -104,5 +108,10 @@ public class SecurityConfig {
     jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
 
     return jwtAuthenticationConverter;
+  }
+
+  @Bean
+  public BCryptPasswordEncoder bCryptPasswordEncoder() {
+    return new BCryptPasswordEncoder();
   }
 }

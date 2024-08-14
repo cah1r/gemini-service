@@ -1,8 +1,8 @@
 package dev.cah1r.geminiservice.cutomer.account.dto;
 
 import com.mongodb.lang.NonNull;
-import dev.cah1r.geminiservice.Ticket;
-import dev.cah1r.geminiservice.TicketBundle;
+import dev.cah1r.geminiservice.ticket.Ticket;
+import dev.cah1r.geminiservice.ticket.TicketBundle;
 import dev.cah1r.geminiservice.cutomer.account.Address;
 import lombok.Builder;
 
