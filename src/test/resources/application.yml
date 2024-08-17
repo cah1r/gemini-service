@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    hibernate.ddl-auto: update
+    show-sql: true
+
+app.security.jwt:
+  signing-key: 7v5ytogh8bh0tgh24n596304ythgvonghub2054htbreghvnq580qhcoqurhfb48139qg49bt34gbeu4g78br947138bb34t07bvfc048
+  validity: 360000

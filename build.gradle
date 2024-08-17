@@ -1,7 +1,9 @@
 plugins {
+	id 'groovy'
 	id 'java'
-	id 'org.springframework.boot' version '3.2.5'
+	id 'org.springframework.boot' version '3.3.2'
 	id 'io.spring.dependency-management' version '1.1.4'
+	id 'jacoco'
 }
 
 group = 'dev.cah1r'
@@ -22,29 +24,44 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	compileOnly 'org.projectlombok:lombok'
+
+	runtimeOnly 'org.postgresql:postgresql'
+	runtimeOnly 'org.springframework.boot:spring-boot-docker-compose'
+
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-	implementation 'org.springframework.session:spring-session-core'
+	implementation 'org.springframework.session:spring-session-jdbc'
 
-	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
 
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-	annotationProcessor 'org.projectlombok:lombok'
+	testRuntimeOnly 'com.h2database:h2'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webflux'
 	testImplementation 'org.springframework.security:spring-security-test'
-	testImplementation 'io.projectreactor:reactor-test'
+
+	testImplementation 'org.apache.groovy:groovy-all:4.0.22'
+	testImplementation 'org.spockframework:spock-core:2.4-M4-groovy-4.0'
+	testImplementation 'org.spockframework:spock-spring:2.4-M4-groovy-4.0'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+test {
+	jvmArgs '-XX:+EnableDynamicAgentLoading'
 }

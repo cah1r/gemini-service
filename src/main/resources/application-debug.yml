@@ -1,0 +1,5 @@
+logging.level:
+  org.springframework.boot.context.config: DEBUG
+  org.springframework.security: DEBUG
+  com.zaxxer.hikari: DEBUG
+  org.springframework.jdbc.datasource: DEBUG

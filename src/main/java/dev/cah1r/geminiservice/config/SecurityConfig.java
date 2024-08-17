@@ -1,67 +1,63 @@
 package dev.cah1r.geminiservice.config;
 
-import com.nimbusds.jose.shaded.gson.internal.LinkedTreeMap;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import dev.cah1r.geminiservice.user.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.security.config.Customizer;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-@Slf4j
+import java.util.List;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
 @Configuration
 @EnableWebSecurity
+@Profile("!test")
 public class SecurityConfig {
 
-  private final String jwkUri;
-
-  SecurityConfig(@Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}") String jwkUri) {
-    this.jwkUri = jwkUri;
-  }
-
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.cors(req -> corsConfigurationSource())
-        .csrf(csrf -> csrf
-                    .csrfTokenRepository(csrfTokenRepository())
-                    .csrfTokenRequestHandler(new SPACsrfTokenRequestHandler()))
-        .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/api/v1/admin/**").hasRole("admin")
-                    .anyRequest()
-                    .permitAll())
-        .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+  public SecurityFilterChain filterChain(
+      HttpSecurity http,
+      JwtTokenUtil jwtTokenUtil,
+      UserService userService
+  ) throws Exception {
 
-    // TODO: hsts (tls ver.)
-    // TODO: xss
+    http.cors(cors -> corsConfigurationSource())
+        .csrf(csrf -> csrf
+            .csrfTokenRepository(csrfTokenRepository())
+            .csrfTokenRequestHandler(new SPACsrfTokenRequestHandler()))
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/v1/admin/**", "/api/v1/route/**").hasRole("ADMIN")
+            .anyRequest()
+            .permitAll())
+        .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+        .addFilterBefore(jwtAuthFilter(jwtTokenUtil, userService), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
+    // TODO: hsts (tls ver.) and xss
   }
+
 
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowedOrigins(List.of("http://localhost:4200"));
-    configuration.setAllowedMethods(List.of("GET", "POST", "OPTIONS", "PUT", "DELETE"));
-    configuration.setAllowedHeaders(List.of("X-XSRF-TOKEN", "Content-Type"));
+    configuration.setAllowedMethods(List.of("GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH"));
+    configuration.setAllowedHeaders(List.of("X-XSRF-TOKEN", CONTENT_TYPE, AUTHORIZATION));
+    configuration.setExposedHeaders(List.of(AUTHORIZATION));
     configuration.setAllowCredentials(true);
+    configuration.setMaxAge(3600L);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
@@ -79,28 +75,13 @@ public class SecurityConfig {
   }
 
   @Bean
-  public JwtDecoder jwtDecoder() {
-    return NimbusJwtDecoder.withJwkSetUri(jwkUri).build();
+  public JwtAuthFilter jwtAuthFilter(JwtTokenUtil jwtTokenUtil, UserService userService) {
+    return new JwtAuthFilter(jwtTokenUtil, userService);
   }
 
   @Bean
-  public JwtAuthenticationConverter jwtAuthenticationConverterForKeycloak() {
-    Converter<Jwt, Collection<GrantedAuthority>> jwtGrantedAuthoritiesConverter =
-        jwt -> {
-          Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
-          var clientRoleMap =
-              (LinkedTreeMap<String, List<String>>) resourceAccess.get("gemini-service");
-          var clientRoles = new ArrayList<>(clientRoleMap.get("roles"));
-
-          return clientRoles.stream()
-              .map(role -> "ROLE_" + role)
-              .map(SimpleGrantedAuthority::new)
-              .collect(Collectors.toList());
-        };
-
-    JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-    jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
-
-    return jwtAuthenticationConverter;
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
   }
+
 }

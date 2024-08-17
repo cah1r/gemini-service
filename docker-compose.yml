@@ -1,45 +1,45 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16.3
-    container_name: keycloak_postgres
+    container_name: gemini_db
     environment:
-      POSTGRES_DB: keycloak-db
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
     networks:
-      - keycloak-network
+      - shared_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   keycloak:
     image: bitnami/keycloak:24.0.4
-    container_name: keycloak_server
+    container_name: keycloak
     environment:
       DB_VENDOR: POSTGRES
       DB_ADDR: postgres
-      DB_DATABASE: keycloak-db
-      DB_USER: keycloak
-      DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
-      KEYCLOAK_ADMIN: gemini
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      DB_DATABASE: ${KEYCLOACK_DB}
+      DB_USER: ${KEYCLOAK_USER}
+      DB_PASSWORD: ${KEYCLOAK_PASSWORD}
+      KEYCLOAK_ADMIN: ${KEYCLOAK_USER}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD}
     ports:
       - "8081:8080"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
-      - keycloak-network
+      - shared_network
 
 volumes:
-  postgres:
-    name: keycloak_postgres
-  keycloak:
-    name: keycloak_server
   postgres_data:
 
 networks:
-  keycloak-network:
+  shared_network:
     driver: bridge

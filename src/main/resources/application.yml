@@ -1,37 +1,24 @@
 spring:
   application:
     name: gemini-service
-  threads:
-    virtual:
-      enabled: true
+  threads.virtual.enabled: true
+  session.jdbc:
+      table-name: SPRING_SESSION
   datasource:
-    username: sa
-    url: jdbc:h2:mem:keycloakdb;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:postgresql://localhost:5432/${GEMINI_DB:gemini_db}
+    username: ${GEMINI_USER}
+    password: ${GEMINI_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
   jpa:
-    defer-datasource-initialization: true
+    properties.hibernate:
+      show_sql: true
+      format_sql: true
+      default_schema: gemini
+    hibernate:
+      ddl-auto: validate
     open-in-view: false
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8081/realms/gemini
-          jwk-set-uri: http://localhost:8081/realms/gemini/protocol/openid-connect/certs
-#      client:
-#        registration:
-#          gemini-service:
-#            client-id: gemini-service
-#            client-secret: ${OAUTH_CLIENT_SECRET}
-#            authorization-grant-type: authorization_code
-#            scope: openid
-#        provider:
-#          gemini-service:
-#            issuer-uri: http://localhost:8081/realms/gemini
+app.security.jwt:
+  signing-key: ${JWT_SIGNING_KEY}
+  validity: 3600000
 
-spring.data.mongodb:
-  uri: mongodb+srv://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/?retryWrites=true&w=majority&appName=GeminiDB
-  database: gemini-db
-
-logging.level:
-  org.springframework.security: DEBUG
-  dev.cah1r: INFO
-  org.springframework.data.mongodb.core.ReactiveMongoTemplate: INFO
+logging.level.dev.cah1r: INFO

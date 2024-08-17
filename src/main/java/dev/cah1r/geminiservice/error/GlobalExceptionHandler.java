@@ -12,13 +12,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  @ExceptionHandler(CustomerAlreadyExistsException.class)
-  public ResponseEntity<String> handleCustomerAlreadyExistsException(CustomerAlreadyExistsException ex) {
+  @ExceptionHandler(EntityAlreadyExistsException.class)
+  public ResponseEntity<String> handleCustomerAlreadyExistsException(EntityAlreadyExistsException ex) {
     return ResponseEntity.status(CONFLICT).body(ex.getMessage());
   }
 
-  @ExceptionHandler(CustomerNotFoundException.class)
-  public ResponseEntity<String> handleCustomerNotFoundException(CustomerNotFoundException ex) {
+  @ExceptionHandler(EntityNotFoundException.class)
+  public ResponseEntity<String> handleCustomerNotFoundException(EntityNotFoundException ex) {
+    log.error(ex.getMessage());
     return ResponseEntity.status(NOT_FOUND).body(ex.getMessage());
   }
 
@@ -32,14 +33,10 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(INTERNAL_SERVER_ERROR).body("Couldn't create route. " + ex.getMessage());
   }
 
-  @ExceptionHandler(BusStopAlreadyExistsException.class)
-  public ResponseEntity<String> handleBusStopAlreadyExistsException(BusStopAlreadyExistsException ex) {
+  @ExceptionHandler(InvalidPasswordException.class)
+  public ResponseEntity<String> handleInvalidPasswordException(InvalidPasswordException ex) {
     log.error(ex.getMessage());
-    return ResponseEntity.status(CONFLICT).body(String.format(ex.getMessage()));
+    return ResponseEntity.status(UNAUTHORIZED).body(ex.getMessage());
   }
 
-  @ExceptionHandler(UpdateException.class)
-  public ResponseEntity<String> handleUpdateException(UpdateException ex) {
-    return ResponseEntity.status(NOT_FOUND).body(ex.getMessage());
-  }
 }
