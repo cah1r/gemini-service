@@ -50,8 +50,8 @@ public class RouteService {
   }
 
   @Transactional
-  public Boolean setStatus(RouteStatusDto dto) {
-    return routeRepository.findById(dto.id())
+  public Boolean setStatus(UUID id, RouteStatusDto dto) {
+    return routeRepository.findById(id)
         .map(route -> setStatusAndSaveInDb(dto, route))
         .map(Route::isActive)
         .orElseThrow(() -> new RouteNotFoundException(dto.id()));

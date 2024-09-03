@@ -19,7 +19,7 @@ class LineTestIT extends Specification {
     @Autowired LineRepository lineRepository
     @Autowired WebTestClient webTestClient
 
-    def apiPath = '/api/v1/admin/line'
+    def apiPath = '/api/v1/admin/lines'
 
 
     def 'should create line'() {
@@ -28,7 +28,7 @@ class LineTestIT extends Specification {
 
         when: 'create line endpoint is called'
         def response = webTestClient.post()
-                .uri(apiPath + "/create")
+                .uri(apiPath)
                 .contentType(APPLICATION_JSON)
                 .bodyValue(lineDto)
                 .exchange()
@@ -52,7 +52,7 @@ class LineTestIT extends Specification {
 
         when: 'create line endpoint is called'
         def response = webTestClient.post()
-                .uri(apiPath + "/create")
+                .uri(apiPath)
                 .contentType(APPLICATION_JSON)
                 .bodyValue(lineDto)
                 .exchange()
@@ -66,7 +66,7 @@ class LineTestIT extends Specification {
         def count = lineRepository.findAll().size()
 
         when: 'get all endpoint is called'
-        def response = webTestClient.get().uri(apiPath + "/get-all").exchange()
+        def response = webTestClient.get().uri(apiPath).exchange()
 
         then: 'http status is OK'
         response.expectStatus().isOk()

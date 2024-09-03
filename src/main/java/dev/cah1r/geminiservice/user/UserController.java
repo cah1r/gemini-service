@@ -8,19 +8,19 @@ import java.util.List;
 import java.util.UUID;
 
 @Slf4j
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/users")
 @RestController
 @RequiredArgsConstructor
 class UserController {
     
     private final UserService userService;
 
-    @PostMapping("/address/{userId}")
+    @PostMapping("/{userId}/address/")
     Address addCustomerAddress(@PathVariable UUID userId, @RequestBody Address address) {
         return null;
     }
 
-    @GetMapping("/getAll")
+    @GetMapping
     List<User> getAllUsers() {
         return userService.getAllUsers();
     }

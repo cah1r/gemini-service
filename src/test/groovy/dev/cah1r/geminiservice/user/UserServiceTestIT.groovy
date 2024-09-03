@@ -32,7 +32,7 @@ class UserServiceTestIT extends Specification {
     @Autowired UserService userService
     @Autowired JwtTokenUtil jwtTokenUtil
 
-    def signupURL = "/api/v1/auth/sign-up"
+    def signupURL = "/api/v1/auth/signup"
     def loginURL = "/api/v1/auth/login"
 
     def 'should create new user'() {

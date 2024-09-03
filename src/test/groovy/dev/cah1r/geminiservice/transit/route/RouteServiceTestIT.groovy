@@ -26,7 +26,7 @@ class RouteServiceTestIT extends Specification {
     @Autowired StopService stopService
     @Autowired RouteService routeService
 
-    def path = "/api/v1/route"
+    def path = "/api/v1/routes"
 
 
     def 'should create route and save it to db'() {
@@ -36,7 +36,7 @@ class RouteServiceTestIT extends Specification {
 
         when: 'create route endpoint was called'
         def response = webTestClient.post()
-                .uri(path + "/create")
+                .uri(path)
                 .contentType(APPLICATION_JSON)
                 .bodyValue(routeDtoJson)
                 .exchange()
@@ -66,7 +66,7 @@ class RouteServiceTestIT extends Specification {
 
         when: 'delete endpoint was called'
         def response = webTestClient.delete()
-                .uri(path + "/delete/$routeId")
+                .uri(path + "/$routeId")
                 .exchange()
 
         then: 'returned http status is NO CONTENT '
@@ -84,7 +84,7 @@ class RouteServiceTestIT extends Specification {
 
         when: 'set status endpoint is called'
         def response = webTestClient.patch()
-                .uri(path + "/set-status")
+                .uri(path + "/$routeId/set-status")
                 .bodyValue(statusDto)
                 .exchange()
 

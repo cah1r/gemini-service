@@ -9,18 +9,18 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/admin/line")
+@RequestMapping("/api/v1/admin/lines")
 @RequiredArgsConstructor
 class LineController {
 
   private final LineService lineService;
 
-  @PostMapping("/create")
+  @PostMapping
   ResponseEntity<LineDto> createNewLine(@RequestBody CreateLineDto lineDto) {
     return ResponseEntity.ok(lineService.createNewLine(lineDto));
   }
 
-  @GetMapping("/get-all")
+  @GetMapping
   List<LineDto> getAllLines() {
     return lineService.getAllLines();
   }

@@ -45,7 +45,6 @@ public class SecurityConfig {
         .addFilterBefore(jwtAuthFilter(jwtTokenUtil, userService), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
-    // TODO: hsts (tls ver.) and xss
   }
 
 

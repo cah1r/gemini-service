@@ -13,29 +13,29 @@ import java.util.Set;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/admin/stop")
+@RequestMapping("/api/v1/admin/stops")
 @RequiredArgsConstructor
 public class StopController {
 
   private final StopService stopService;
 
-  @PostMapping("/create")
+  @PostMapping
   Stop createStop(@RequestBody CreateStopDto createStopDto) {
     return stopService.createStop(createStopDto);
   }
 
-  @DeleteMapping("/delete/{id}")
+  @DeleteMapping("/{id}")
   ResponseEntity<Void> deleteBusStop(@PathVariable Long id) {
     stopService.deleteBusStop(id);
     return ResponseEntity.noContent().build();
   }
 
-  @GetMapping("/get-all")
+  @GetMapping
   List<StopWithLineDto> getAllBusStops() {
     return stopService.getAllBusStops();
   }
 
-  @PutMapping("/update-order")
+  @PutMapping
   ResponseEntity<Void> updateStops(@RequestBody Set<StopWithSchedulesDto> stops) {
     stopService.updateStopsOrder(stops);
     return ResponseEntity.ok().build();

@@ -13,33 +13,33 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/route")
+@RequestMapping("/api/v1/routes")
 public class RouteController {
 
   private final RouteService routeService;
 
-  @PostMapping("/create")
+  @PostMapping
   ResponseEntity<UUID> createRoute(@RequestBody CreateRouteDto createRouteDto) {
     return ResponseEntity.ok(routeService.createRoute(createRouteDto));
   }
 
-  @GetMapping("/get-all")
+  @GetMapping
   Page<RouteDto> getAllRoutes(@RequestParam String keyword, @RequestParam int page, @RequestParam int size) {
     return routeService.getAllRoutes(keyword, page, size);
   }
 
-  @PatchMapping("/set-status")
-  Boolean changeStatus(@RequestBody RouteStatusDto routeDto) {
-    return routeService.setStatus(routeDto);
+  @PatchMapping("/{id}/set-status")
+  Boolean changeStatus(@PathVariable UUID id, @RequestBody RouteStatusDto routeDto) {
+    return routeService.setStatus(id, routeDto);
   }
 
-  @DeleteMapping("/delete/{id}")
+  @DeleteMapping("/{id}")
   ResponseEntity<Void> deleteRoute(@PathVariable UUID id) {
     routeService.deleteRoute(id);
     return ResponseEntity.noContent().build();
   }
 
-  @PatchMapping("/set-ticket-availability/{id}")
+  @PatchMapping("{id}/set-ticket-availability")
   Boolean setTicketAvailability(@PathVariable UUID id, @RequestBody TicketAvailabilityDto dto) {
     return routeService.setTicketAvailability(id, dto);
   }

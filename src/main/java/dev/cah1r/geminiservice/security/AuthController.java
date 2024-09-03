@@ -5,7 +5,6 @@ import dev.cah1r.geminiservice.user.dto.UserDataDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.util.function.Tuple2;
@@ -30,9 +29,8 @@ public class AuthController {
     return getOkResponse(userWithJwt);
   }
 
-  @PostMapping("/sign-up")
-  @ResponseStatus(HttpStatus.CREATED)
-  ResponseEntity<UserDataDto> createCustomer(@RequestBody CreateUserDto createUserDto) {
+  @PostMapping("/signup")
+  ResponseEntity<UserDataDto> createUser(@RequestBody CreateUserDto createUserDto) {
     var userWithToken = userService.signUp(createUserDto);
 
     return getOkResponse(userWithToken);
