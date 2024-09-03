@@ -17,29 +17,8 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-
-  keycloak:
-    image: bitnami/keycloak:24.0.4
-    container_name: keycloak
-    environment:
-      DB_VENDOR: POSTGRES
-      DB_ADDR: postgres
-      DB_DATABASE: ${KEYCLOACK_DB}
-      DB_USER: ${KEYCLOAK_USER}
-      DB_PASSWORD: ${KEYCLOAK_PASSWORD}
-      KEYCLOAK_ADMIN: ${KEYCLOAK_USER}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD}
-    ports:
-      - "8081:8080"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - shared_network
-
 volumes:
   postgres_data:
-
 networks:
   shared_network:
     driver: bridge

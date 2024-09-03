@@ -5,24 +5,21 @@ A backend service for booking and purchasing tickets for a transport company. Th
 ## Tech Stack
 
 - **Java 21**
-- **Reactive MongoDB**
+- **PostgreSQL**
 - **Gradle**
 - **Spring 3**
 - **Docker**
-- **OAuth2**
 
 ## Features
 
-- Reactive programming model with Reactive MongoDB.
-- Secure authentication and authorization using Keycloak.
+- Secure authentication and authorization using JWT tokens.
 - Easy setup and deployment with Docker and Docker Compose.
 
 ## Prerequisites
 
 Before you begin, ensure you have met the following requirements:
 - Java 21 installed on your machine.
-- Docker and Docker Compose installed for running Keycloak and its Postgres database.
-- MongoDB server running for the reactive database.
+- Docker and Docker Compose installed for running Postgres database.
 
 ## Installation
 
@@ -35,19 +32,16 @@ cd gemini-service
    
 2. **Set up environment:**
    
-   Create a `.env` file in the root directory and add the necessary environment variables as described above.
-
-   #### For Reactive MongoDB which currently needs to be created manually
-   - `DB_PASSWORD`
-   - `DB_HOST`
-   - `DB_USER`
-
-   #### For Keycloak auth server and its Postgres database which are created based on Docker Compose
-   - `KEYCLOAK_ADMIN_PASSWORD`
-   - `KEYCLOAK_DB_PASSWORD`
+   Create a `.env` file in the root directory and add the necessary environment variables as described below.
+- `POSTGRES_USER`
+- `POSTGRES_PASSWORD`
+- `GEMINI_DB`
+- `GEMINI_USER`
+- `GEMINI_DB_PASSWORD`
+- `JWT_SIGNING_KEY`
    
 
-3. **Run Keycloak and Postgres with Docker Compose**
+3. **Run Postgres with Docker Compose**
 ```shell
 docker-compose up -d
 ```
