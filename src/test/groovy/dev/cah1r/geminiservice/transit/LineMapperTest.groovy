@@ -1,6 +1,7 @@
 package dev.cah1r.geminiservice.transit
 
-
+import dev.cah1r.geminiservice.transit.line.Line
+import dev.cah1r.geminiservice.transit.line.LineMapper
 import spock.lang.Specification
 
 class LineMapperTest extends Specification {

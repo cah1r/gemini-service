@@ -17,6 +17,7 @@ import java.util.UUID;
 public class RouteController {
 
   private final RouteService routeService;
+  private final RouteStatusService routeStatusService;
 
   @PostMapping
   ResponseEntity<UUID> createRoute(@RequestBody CreateRouteDto createRouteDto) {
@@ -30,7 +31,7 @@ public class RouteController {
 
   @PatchMapping("/{id}/set-status")
   Boolean changeStatus(@PathVariable UUID id, @RequestBody RouteStatusDto routeDto) {
-    return routeService.setStatus(id, routeDto);
+    return routeStatusService.setStatus(id, routeDto);
   }
 
   @DeleteMapping("/{id}")
@@ -41,6 +42,6 @@ public class RouteController {
 
   @PatchMapping("{id}/set-ticket-availability")
   Boolean setTicketAvailability(@PathVariable UUID id, @RequestBody TicketAvailabilityDto dto) {
-    return routeService.setTicketAvailability(id, dto);
+    return routeStatusService.setTicketAvailability(id, dto);
   }
 }

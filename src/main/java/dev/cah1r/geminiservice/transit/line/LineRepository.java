@@ -1,5 +1,6 @@
-package dev.cah1r.geminiservice.transit;
+package dev.cah1r.geminiservice.transit.line;
 
+import dev.cah1r.geminiservice.transit.line.dto.LineViewDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -16,4 +17,10 @@ public interface LineRepository extends JpaRepository<Line, Long> {
       ORDER BY l.description ASC
       """)
   List<Line> findAllWithStopsAndSchedules();
+
+  @Query("""
+      SELECT DISTINCT new dev.cah1r.geminiservice.transit.line.dto.LineViewDto(l.id, l.description, size(l.lineStops))
+      FROM Line l
+      """)
+  List<LineViewDto> findAllWithStopsCount();
 }

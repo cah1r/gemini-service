@@ -1,6 +1,6 @@
 package dev.cah1r.geminiservice.transit.stop;
 
-import dev.cah1r.geminiservice.transit.Line;
+import dev.cah1r.geminiservice.transit.line.Line;
 import dev.cah1r.geminiservice.transit.route.Route;
 import dev.cah1r.geminiservice.transit.route.Schedule;
 import jakarta.persistence.*;

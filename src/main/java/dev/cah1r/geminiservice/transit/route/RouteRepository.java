@@ -15,7 +15,7 @@ public interface RouteRepository extends JpaRepository<Route, UUID> {
   @Query("""
       SELECT r FROM Route r
       JOIN FETCH r.startStop origin
-      JOIN FETCH  r.endStop destination
+      JOIN FETCH r.endStop destination
       WHERE LOWER(origin.town) LIKE LOWER(CONCAT('%', :keyword, '%'))
       OR LOWER(destination.town) LIKE LOWER(CONCAT('%', :keyword, '%'))
       OR LOWER(origin.details) LIKE LOWER(CONCAT('%', :keyword, '%'))

@@ -1,5 +1,9 @@
 package dev.cah1r.geminiservice.transit
 
+import dev.cah1r.geminiservice.transit.line.LineRepository
+import dev.cah1r.geminiservice.transit.line.LineService
+import dev.cah1r.geminiservice.transit.line.dto.CreateLineDto
+import dev.cah1r.geminiservice.transit.line.dto.LineDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles

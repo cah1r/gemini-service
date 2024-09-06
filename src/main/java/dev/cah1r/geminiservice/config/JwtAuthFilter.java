@@ -2,6 +2,7 @@ package dev.cah1r.geminiservice.config;
 
 import dev.cah1r.geminiservice.user.UserService;
 import dev.cah1r.geminiservice.user.dto.UserDataDto;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,18 +30,24 @@ public class JwtAuthFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
     String path = request.getRequestURI();
 
-    if (!path.startsWith("/api/v1/auth")) {
-      String authHeader = request.getHeader("Authorization");
+    try {
+      if (!path.startsWith("/api/v1/auth")) {
+        String authHeader = request.getHeader("Authorization");
 
-      ofNullable(authHeader)
-          .filter(header -> header.startsWith("Bearer"))
-          .map(h -> h.split(" ")[1])
-          .ifPresent(token -> {
-            String email = jwtTokenUtil.getEmailFromToken(token);
-            validateToken(email, token);
-          });
+        ofNullable(authHeader)
+            .filter(header -> header.startsWith("Bearer"))
+            .map(h -> h.split(" ")[1])
+            .ifPresent(token -> {
+              String email = jwtTokenUtil.getEmailFromToken(token);
+              validateToken(email, token);
+            });
+      }
+    } catch (ExpiredJwtException e) {
+      log.warn("JWT Token has expired. Message exception: {}", e.getMessage());
+      SecurityContextHolder.clearContext();
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT token has expired");
+      return;
     }
-
     filterChain.doFilter(request, response);
   }
 
@@ -58,6 +65,5 @@ public class JwtAuthFilter extends OncePerRequestFilter {
   private static List<SimpleGrantedAuthority> mapRoleToAuthority(UserDataDto user) {
     return List.of(new SimpleGrantedAuthority("ROLE_" + user.role().toString()));
   }
-
 
 }

@@ -1,9 +1,6 @@
-package dev.cah1r.geminiservice.transit;
+package dev.cah1r.geminiservice.transit.driver;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.UUID;
@@ -14,6 +11,7 @@ import java.util.UUID;
 public class Driver {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
   @Column(nullable = false)
@@ -23,5 +21,8 @@ public class Driver {
   private String lastName;
 
   @Column(nullable = false)
-  private String phone;
+  private String phoneNumber;
+
+  @Column(nullable = false)
+  private Boolean isActive;
 }

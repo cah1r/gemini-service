@@ -1,12 +1,14 @@
 package dev.cah1r.geminiservice.error;
 
-import static org.springframework.http.HttpStatus.*;
-
 import dev.cah1r.geminiservice.error.exception.*;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @RestControllerAdvice
@@ -37,6 +39,12 @@ public class GlobalExceptionHandler {
   public ResponseEntity<String> handleInvalidPasswordException(InvalidPasswordException ex) {
     log.error(ex.getMessage());
     return ResponseEntity.status(UNAUTHORIZED).body(ex.getMessage());
+  }
+
+  @ExceptionHandler(ExpiredJwtException.class)
+  @ResponseStatus(UNAUTHORIZED)
+  public ResponseEntity<String> handleExpiredJwtException(ExpiredJwtException ex) {
+    return new ResponseEntity<>("JWT token has expired", UNAUTHORIZED);
   }
 
 }

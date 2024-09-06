@@ -1,12 +1,8 @@
 package dev.cah1r.geminiservice.transit.route;
 
-import dev.cah1r.geminiservice.error.exception.BusStopNotFoundException;
-import dev.cah1r.geminiservice.error.exception.RouteNotFoundException;
 import dev.cah1r.geminiservice.transit.route.dto.CreateRouteDto;
 import dev.cah1r.geminiservice.transit.route.dto.RouteDto;
-import dev.cah1r.geminiservice.transit.route.dto.RouteStatusDto;
-import dev.cah1r.geminiservice.transit.route.dto.TicketAvailabilityDto;
-import dev.cah1r.geminiservice.transit.stop.StopService;
+import dev.cah1r.geminiservice.transit.stop.Stop;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,7 +12,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
 import java.util.UUID;
+
+import static dev.cah1r.geminiservice.transit.route.RouteMapper.toRoute;
 
 @Slf4j
 @Service
@@ -24,7 +23,7 @@ import java.util.UUID;
 public class RouteService {
 
   private final RouteRepository routeRepository;
-  private final StopService stopService;
+  private final StopsForRouteService stopsForRouteService;
 
 
   Page<RouteDto> getAllRoutes(String keyword, int page, int size) {
@@ -37,46 +36,15 @@ public class RouteService {
   }
 
   @Transactional
-  public UUID createRoute(CreateRouteDto createRouteDto) {
-    var startStop = stopService
-        .findStopById(createRouteDto.originStopId())
-        .orElseThrow(() -> new BusStopNotFoundException(createRouteDto.originStopId()));
+  public UUID createRoute(CreateRouteDto dto) {
+    Map<Long, Stop> stops = stopsForRouteService.getStopsForRoute(dto);
+    Route route = toRoute(dto, stops.get(dto.originStopId()), stops.get(dto.destinationStopId()));
 
-    var endStop = stopService
-        .findStopById(createRouteDto.destinationStopId())
-        .orElseThrow(() -> new BusStopNotFoundException(createRouteDto.destinationStopId()));
-
-    return routeRepository.save(RouteMapper.toRoute(createRouteDto, startStop, endStop)).getId();
-  }
-
-  @Transactional
-  public Boolean setStatus(UUID id, RouteStatusDto dto) {
-    return routeRepository.findById(id)
-        .map(route -> setStatusAndSaveInDb(dto, route))
-        .map(Route::isActive)
-        .orElseThrow(() -> new RouteNotFoundException(dto.id()));
-  }
-
-  private Route setStatusAndSaveInDb(RouteStatusDto dto, Route route) {
-    route.setActive(dto.isActive());
-    return routeRepository.save(route);
+    return routeRepository.save(route).getId();
   }
 
   @Transactional
   public void deleteRoute(UUID id) {
     routeRepository.deleteById(id);
-  }
-
-  @Transactional
-  public boolean setTicketAvailability(UUID id, TicketAvailabilityDto dto) {
-    return routeRepository.findById(id)
-        .map(route -> setStatusAndSave(dto.isTicketAvailable(), route))
-        .map(Route::isTicketAvailable)
-        .orElseThrow(() -> new RouteNotFoundException(id));
-  }
-
-  private Route setStatusAndSave(boolean ticketAvailability, Route route) {
-    route.setTicketAvailable(ticketAvailability);
-    return routeRepository.save(route);
   }
 }
