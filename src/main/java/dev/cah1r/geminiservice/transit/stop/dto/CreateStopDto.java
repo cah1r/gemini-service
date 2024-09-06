@@ -1,6 +1,6 @@
 package dev.cah1r.geminiservice.transit.stop.dto;
 
-import dev.cah1r.geminiservice.transit.Line;
+import dev.cah1r.geminiservice.transit.line.Line;
 import dev.cah1r.geminiservice.transit.stop.Stop;
 
 public record CreateStopDto(String town, String details, Line line, Integer lineOrder) {

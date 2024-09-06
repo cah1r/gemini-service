@@ -19,6 +19,6 @@ spring:
     open-in-view: false
 app.security.jwt:
   signing-key: ${JWT_SIGNING_KEY}
-  validity: 3600000
+  validity: 28800000 # 8h
 
 logging.level.dev.cah1r: INFO

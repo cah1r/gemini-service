@@ -1,6 +1,6 @@
 package dev.cah1r.geminiservice.transit.stop
 
-import dev.cah1r.geminiservice.transit.Line
+import dev.cah1r.geminiservice.transit.line.Line
 import dev.cah1r.geminiservice.transit.route.Schedule
 import spock.lang.Specification
 
@@ -23,12 +23,12 @@ class StopMapperTest extends Specification {
         dto.departures() == stop.schedules.collect { it.departureTime }
     }
 
-    def "should map Stop to StopWithLineDto correctly"() {
+    def "should map Stop to StopByLineDto correctly"() {
         given:
         def stop = prepareTestStop()
 
         when:
-        def dto = StopMapper.toStopWithLineDto(stop)
+        def dto = StopMapper.toStopByLineDto(stop, stop.line.id)
 
         then:
         dto.id() == stop.getId()

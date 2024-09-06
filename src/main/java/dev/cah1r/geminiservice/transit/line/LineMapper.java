@@ -1,5 +1,6 @@
-package dev.cah1r.geminiservice.transit;
+package dev.cah1r.geminiservice.transit.line;
 
+import dev.cah1r.geminiservice.transit.line.dto.LineDto;
 import dev.cah1r.geminiservice.transit.stop.StopMapper;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +12,7 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE)
 public class LineMapper {
 
-  static LineDto toLineDto(Line line) {
+  public static LineDto toLineDto(Line line) {
     return new LineDto(
         line.getId(),
         line.getDescription(),

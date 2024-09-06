@@ -1,6 +1,6 @@
 package dev.cah1r.geminiservice.helpers
 
-import dev.cah1r.geminiservice.transit.Line
+import dev.cah1r.geminiservice.transit.line.Line
 import dev.cah1r.geminiservice.transit.stop.Stop
 
 class StopProvider {

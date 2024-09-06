@@ -1,8 +1,8 @@
 package dev.cah1r.geminiservice.transit.stop;
 
 import dev.cah1r.geminiservice.transit.route.Schedule;
+import dev.cah1r.geminiservice.transit.stop.dto.StopByLineDto;
 import dev.cah1r.geminiservice.transit.stop.dto.StopDto;
-import dev.cah1r.geminiservice.transit.stop.dto.StopWithLineDto;
 import dev.cah1r.geminiservice.transit.stop.dto.StopWithSchedulesDto;
 import lombok.NoArgsConstructor;
 
@@ -33,16 +33,6 @@ public class StopMapper {
         .orElse(List.of());
   }
 
-  static StopWithLineDto toStopWithLineDto(Stop stop) {
-    return StopWithLineDto.builder()
-        .id(stop.getId())
-        .town(stop.getTown())
-        .details(stop.getDetails())
-        .lineOrder(stop.getLineOrder())
-        .lineId(stop.getLine().getId())
-        .build();
-  }
-
   public static StopDto toStopDto(Stop stop) {
     return StopDto.builder()
         .id(stop.getId())
@@ -50,5 +40,15 @@ public class StopMapper {
         .details(stop.getDetails())
         .lineOrder(stop.getLineOrder())
         .build();
+  }
+
+  public static StopByLineDto toStopByLineDto(Stop stop, Long lineId) {
+    return new StopByLineDto(
+        stop.getId(),
+        stop.getTown(),
+        stop.getDetails(),
+        stop.getLineOrder(),
+        lineId
+    );
   }
 }

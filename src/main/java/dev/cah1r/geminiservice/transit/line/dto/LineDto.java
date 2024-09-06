@@ -1,4 +1,4 @@
-package dev.cah1r.geminiservice.transit;
+package dev.cah1r.geminiservice.transit.line.dto;
 
 import dev.cah1r.geminiservice.transit.stop.dto.StopWithSchedulesDto;
 

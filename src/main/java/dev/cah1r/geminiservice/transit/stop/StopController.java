@@ -1,15 +1,14 @@
 package dev.cah1r.geminiservice.transit.stop;
 
 import dev.cah1r.geminiservice.transit.stop.dto.CreateStopDto;
-import dev.cah1r.geminiservice.transit.stop.dto.StopWithSchedulesDto;
-import dev.cah1r.geminiservice.transit.stop.dto.StopWithLineDto;
+import dev.cah1r.geminiservice.transit.stop.dto.StopByLineDto;
+import dev.cah1r.geminiservice.transit.stop.dto.StopDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 @RestController
@@ -31,12 +30,12 @@ public class StopController {
   }
 
   @GetMapping
-  List<StopWithLineDto> getAllBusStops() {
+  List<StopDto> getAllBusStops() {
     return stopService.getAllBusStops();
   }
 
   @PutMapping
-  ResponseEntity<Void> updateStops(@RequestBody Set<StopWithSchedulesDto> stops) {
+  ResponseEntity<Void> updateStops(@RequestBody List<StopByLineDto> stops) {
     stopService.updateStopsOrder(stops);
     return ResponseEntity.ok().build();
   }

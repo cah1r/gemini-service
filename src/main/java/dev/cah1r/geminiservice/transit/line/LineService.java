@@ -1,6 +1,9 @@
-package dev.cah1r.geminiservice.transit;
+package dev.cah1r.geminiservice.transit.line;
 
 import dev.cah1r.geminiservice.error.exception.LineAlreadyExistsException;
+import dev.cah1r.geminiservice.transit.line.dto.CreateLineDto;
+import dev.cah1r.geminiservice.transit.line.dto.LineDto;
+import dev.cah1r.geminiservice.transit.line.dto.LineViewDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,10 +29,7 @@ class LineService {
     return new LineDto(line.getId(), line.getDescription(), List.of());
   }
 
-  List<LineDto> getAllLines() {
-    return lineRepository.findAllWithStopsAndSchedules()
-        .stream()
-        .map(LineMapper::toLineDto)
-        .toList();
+  List<LineViewDto> getAllLines() {
+    return lineRepository.findAllWithStopsCount();
   }
 }

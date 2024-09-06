@@ -2,8 +2,8 @@ package dev.cah1r.geminiservice.user
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import dev.cah1r.geminiservice.config.JwtTokenUtil
-import dev.cah1r.geminiservice.security.CreateUserDto
-import dev.cah1r.geminiservice.security.UserCredentialsDto
+import dev.cah1r.geminiservice.user.dto.CreateUserDto
+import dev.cah1r.geminiservice.user.dto.UserCredentialsDto
 import dev.cah1r.geminiservice.user.dto.UserDataDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
