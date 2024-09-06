@@ -2,7 +2,10 @@ package dev.cah1r.geminiservice.transit.driver;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -25,4 +28,10 @@ public class Driver {
 
   @Column(nullable = false)
   private Boolean isActive;
+
+  @CreationTimestamp
+  private LocalDateTime createdTsp;
+
+  @UpdateTimestamp
+  private LocalDateTime lastUpdateTsp;
 }

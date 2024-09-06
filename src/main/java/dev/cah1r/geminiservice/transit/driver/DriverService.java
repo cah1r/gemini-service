@@ -4,6 +4,7 @@ import dev.cah1r.geminiservice.error.exception.DriverAlreadyExistsException;
 import dev.cah1r.geminiservice.error.exception.DriverNotFoundException;
 import dev.cah1r.geminiservice.transit.driver.dto.CreateDriverDto;
 import dev.cah1r.geminiservice.transit.driver.dto.DriverDto;
+import dev.cah1r.geminiservice.transit.driver.dto.DriverStatusDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +29,11 @@ class DriverService {
         .toList();
   }
 
-  UUID createDriver(CreateDriverDto createDriverDto) {
-    log.info("Received driver data to create: {}", createDriverDto);
+  @Transactional
+  public UUID createDriver(CreateDriverDto createDriverDto) {
     driverRepository.findDriverByPhoneNumber(createDriverDto.phoneNumber())
         .ifPresent(driver -> {
-          log.info("Failed creating new driver {} {}. Phone number: {} already already exists in db",
+          log.info("Failed creating new driver {} {}. Phone number: {} already exists in db which supposed to be unique",
               createDriverDto.firstName(), createDriverDto.lastName(), createDriverDto.phoneNumber());
           throw new DriverAlreadyExistsException(createDriverDto.phoneNumber());
         });
@@ -42,21 +43,29 @@ class DriverService {
         .getId();
   }
 
-  void deleteDriver(UUID id) {
-    driverRepository.findById(id)
-        .ifPresentOrElse(
-            driverRepository::delete,
-            () -> {throw new DriverNotFoundException(id);}
-        );
+  @Transactional
+  public void deleteDriver(UUID id) {
+    driverRepository.findById(id).ifPresentOrElse(
+        driverRepository::delete,
+        () -> {throw new DriverNotFoundException(id);}
+    );
   }
 
   @Transactional
-  public void setDriverActiveStatus(UUID id, boolean isActive) {
+  public void setDriverActiveStatus(UUID id, DriverStatusDto dto) {
     driverRepository.findById(id)
-        .ifPresentOrElse(driver -> {
-              driver.setIsActive(isActive);
-              driverRepository.save(driver);
-            }, () -> { throw new DriverNotFoundException(id); }
+        .ifPresentOrElse(driver -> setStatusAndSave(dto, driver),
+            () -> {
+              log.error("Error setting status for driver with id: {}. Driver has not been found in db", id);
+              throw new DriverNotFoundException(id);
+            }
         );
+  }
+
+  private void setStatusAndSave(DriverStatusDto dto, Driver driver) {
+    driver.setIsActive(dto.isActive());
+    driverRepository.save(driver);
+    log.info("{} {} status has been set to: {}",
+        driver.getFirstName(), driver.getLastName(), driver.getIsActive() ? "active" : "inactive");
   }
 }

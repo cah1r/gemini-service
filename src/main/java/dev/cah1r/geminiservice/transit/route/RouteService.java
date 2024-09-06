@@ -40,11 +40,16 @@ public class RouteService {
     Map<Long, Stop> stops = stopsForRouteService.getStopsForRoute(dto);
     Route route = toRoute(dto, stops.get(dto.originStopId()), stops.get(dto.destinationStopId()));
 
-    return routeRepository.save(route).getId();
+    var routeId = routeRepository.save(route).getId();
+    log.info("[{}] Route from: {} to: {} has been created",
+        routeId, route.getStartStop().getTown(), route.getEndStop().getTown());
+
+    return routeId;
   }
 
   @Transactional
   public void deleteRoute(UUID id) {
     routeRepository.deleteById(id);
+    log.info("[{}] Route has been deleted", id);
   }
 }

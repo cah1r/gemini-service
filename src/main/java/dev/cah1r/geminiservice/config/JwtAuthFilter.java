@@ -29,7 +29,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
     String path = request.getRequestURI();
-
     try {
       if (!path.startsWith("/api/v1/auth")) {
         String authHeader = request.getHeader("Authorization");
@@ -43,7 +42,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             });
       }
     } catch (ExpiredJwtException e) {
-      log.warn("JWT Token has expired. Message exception: {}", e.getMessage());
       SecurityContextHolder.clearContext();
       response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT token has expired");
       return;
