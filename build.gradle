@@ -3,6 +3,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.2'
 	id 'io.spring.dependency-management' version '1.1.4'
+	id "org.sonarqube" version "5.1.0.4882"
 	id 'jacoco'
 }
 
@@ -68,4 +69,12 @@ tasks.named('test') {
 
 test {
 	jvmArgs '-XX:+EnableDynamicAgentLoading'
+}
+
+sonarqube {
+	properties {
+		property "sonar.projectKey", System.getenv("SONAR_PROJECT_KEY")
+		property "sonar.organization", System.getenv("SONAR_ORG_KEY")
+		property "sonar.host.url", "https://sonarcloud.io"
+	}
 }
