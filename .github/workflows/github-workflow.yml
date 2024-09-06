@@ -19,7 +19,7 @@ jobs:
 
     strategy:
       matrix:
-        java-version: [21]
+        java-version: [ 21 ]
 
     steps:
       - name: Checkout code
@@ -50,5 +50,5 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
           SONAR_ORG_KEY: ${{ secrets.SONAR_ORG_KEY }}
-          run: |
-            ./gradlew sonarqube -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        run: |
+          ./gradlew sonarqube -Dsonar.login=${{ secrets.SONAR_TOKEN }}
