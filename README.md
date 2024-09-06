@@ -1,4 +1,5 @@
-# Project Gemini
+# Project Gemini 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=cah1r_gemini-service&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=cah1r_gemini-service)
 
 A backend service for booking and purchasing tickets for a transport company. The current project involves a reactive approach using Reactive MongoDB.
 

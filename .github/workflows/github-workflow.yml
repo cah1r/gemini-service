@@ -10,6 +10,9 @@ on:
       - master
       - develop
 
+permissions:
+  pull-requests: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -41,3 +44,11 @@ jobs:
 
       - name: Run Spock tests
         run: ./gradlew test --no-daemon
+
+      - name: Analyze with SonarCloud
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+          SONAR_ORG_KEY: ${{ secrets.SONAR_ORG_KEY }}
+          run: |
+            ./gradlew sonarqube -Dsonar.login=${{ secrets.SONAR_TOKEN }}
