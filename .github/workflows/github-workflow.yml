@@ -39,11 +39,11 @@ jobs:
             ~/.gradle/wrapper
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
 
-      - name: Build with Gradle
-        run: ./gradlew build --no-daemon
-
       - name: Run Spock tests
         run: ./gradlew test --no-daemon
+
+      - name: Build with Gradle
+        run: ./gradlew build jacocoTestReport --no-daemon
 
       - name: Analyze with SonarCloud
         env:
