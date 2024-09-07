@@ -19,17 +19,26 @@ jobs:
 
     strategy:
       matrix:
-        java-version: [21]
+        java-version: [ 21 ]
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java-version }}
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
 
       - name: Cache Gradle packages
         uses: actions/cache@v3
@@ -39,16 +48,17 @@ jobs:
             ~/.gradle/wrapper
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
 
-      - name: Build with Gradle
-        run: ./gradlew build --no-daemon
-
-      - name: Run Spock tests
-        run: ./gradlew test --no-daemon
+#      - name: Run Spock tests
+#        run: ./gradlew test --no-daemon
+#
+#      - name: Build with Gradle
+#        run: ./gradlew build jacocoTestReport --no-daemon
 
       - name: Analyze with SonarCloud
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
           SONAR_ORG_KEY: ${{ secrets.SONAR_ORG_KEY }}
-          run: |
-            ./gradlew sonarqube -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew build sonar --info
+#        run: |
+#          ./gradlew sonar -Dsonar.login=${{ secrets.SONAR_TOKEN }}
