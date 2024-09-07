@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+import static java.lang.Boolean.TRUE;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -66,6 +68,6 @@ class DriverService {
     driver.setIsActive(dto.isActive());
     driverRepository.save(driver);
     log.info("{} {} status has been set to: {}",
-        driver.getFirstName(), driver.getLastName(), driver.getIsActive() ? "active" : "inactive");
+        driver.getFirstName(), driver.getLastName(), TRUE.equals(driver.getIsActive()) ? "active" : "inactive");
   }
 }

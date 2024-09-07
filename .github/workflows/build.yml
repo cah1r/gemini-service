@@ -9,6 +9,7 @@ on:
     branches:
       - master
       - develop
+  workflow_dispatch:
 
 permissions:
   pull-requests: read
@@ -44,15 +45,17 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            ~/.gradle/caches
+            ~/.gradle/caches/modules-2
             ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'gradle.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
 
 #      - name: Run Spock tests
 #        run: ./gradlew test --no-daemon
 #
-#      - name: Build with Gradle
-#        run: ./gradlew build jacocoTestReport --no-daemon
+      - name: Build with Gradle
+        run: ./gradlew build jacocoTestReport --no-daemon
 
       - name: Analyze with SonarCloud
         env:
