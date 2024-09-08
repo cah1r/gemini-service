@@ -2,7 +2,7 @@ package dev.cah1r.geminiservice.user
 
 import static dev.cah1r.geminiservice.user.Role.USER
 
-class UserHelperMethods {
+class UserUtils {
 
     static User getTestUser_1() {
         new User(

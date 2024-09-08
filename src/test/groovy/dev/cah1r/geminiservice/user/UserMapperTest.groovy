@@ -5,7 +5,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import spock.lang.Specification
 
-import static dev.cah1r.geminiservice.user.UserHelperMethods.testUser_1
+import static UserUtils.testUser_1
 import static java.util.UUID.randomUUID
 
 class UserMapperTest extends Specification {

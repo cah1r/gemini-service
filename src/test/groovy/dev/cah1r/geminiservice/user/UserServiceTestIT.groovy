@@ -7,8 +7,8 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 import spock.lang.Specification
 
-import static dev.cah1r.geminiservice.user.UserHelperMethods.testUser_1
-import static dev.cah1r.geminiservice.user.UserHelperMethods.testUser_2
+import static UserUtils.testUser_1
+import static UserUtils.testUser_2
 import static dev.cah1r.geminiservice.user.UserMapper.toUserDataDto
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 

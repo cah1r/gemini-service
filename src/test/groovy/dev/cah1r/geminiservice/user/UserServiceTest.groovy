@@ -3,8 +3,8 @@ package dev.cah1r.geminiservice.user
 import dev.cah1r.geminiservice.error.exception.CustomerNotFoundException
 import spock.lang.Specification
 
-import static dev.cah1r.geminiservice.user.UserHelperMethods.getTestUser_2
-import static dev.cah1r.geminiservice.user.UserHelperMethods.testUser_1
+import static UserUtils.getTestUser_2
+import static UserUtils.testUser_1
 import static dev.cah1r.geminiservice.user.UserMapper.toUserDataDto
 
 class UserServiceTest extends Specification {

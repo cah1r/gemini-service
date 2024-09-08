@@ -1,8 +1,8 @@
 package dev.cah1r.geminiservice.user;
 
 import dev.cah1r.geminiservice.config.JwtTokenUtil;
-import dev.cah1r.geminiservice.error.exception.CustomerAlreadyExistsException;
 import dev.cah1r.geminiservice.error.exception.CustomerNotFoundException;
+import dev.cah1r.geminiservice.error.exception.UserAlreadyExistsException;
 import dev.cah1r.geminiservice.user.dto.CreateUserDto;
 import dev.cah1r.geminiservice.user.dto.UserCredentialsDto;
 import dev.cah1r.geminiservice.user.dto.UserDataDto;
@@ -28,13 +28,13 @@ public class UserAuthService {
     userRepository.findByEmail(createUserDto.email()).ifPresent(
         user -> {
           log.info("Failed to create new user with email: {} as it already exists in db", createUserDto.email());
-          throw new CustomerAlreadyExistsException(user.getEmail());
+          throw new UserAlreadyExistsException(user.getEmail());
         });
 
     var encryptedPassword = passwordProcessor.encrypt(createUserDto.password());
     var createdUser = userRepository.save(UserMapper.toUser(createUserDto, encryptedPassword));
     var token = jwtTokenUtil.generateToken(createUserDto.email(), createdUser.getRole());
-    log.info("Created new user with email: {}", createdUser.getEmail());
+    log.info("New User with email: {} has been registered", createdUser.getEmail());
 
     return Tuples.of(UserMapper.toUserDataDto(createdUser), token);
   }

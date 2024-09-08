@@ -2,11 +2,29 @@ package dev.cah1r.geminiservice.transit.driver;
 
 import dev.cah1r.geminiservice.transit.driver.dto.CreateDriverDto;
 import dev.cah1r.geminiservice.transit.driver.dto.DriverDto;
-import org.mapstruct.Mapper;
+import lombok.NoArgsConstructor;
 
-@Mapper(componentModel = "spring")
-public interface DriverMapper {
+import static lombok.AccessLevel.PRIVATE;
 
-  Driver toDriver(CreateDriverDto createDriverDto);
-  DriverDto toDriverDto(Driver driver);
+@NoArgsConstructor(access = PRIVATE)
+public class DriverMapper {
+
+  public static Driver toDriver(CreateDriverDto createDriverDto) {
+    Driver driver = new Driver();
+    driver.setFirstName(createDriverDto.firstName());
+    driver.setLastName(createDriverDto.lastName());
+    driver.setPhoneNumber(createDriverDto.phoneNumber());
+    driver.setIsActive(createDriverDto.isActive());
+    return driver;
+  }
+
+  public static DriverDto toDriverDto(Driver driver){
+    return new DriverDto(
+        driver.getId(),
+        driver.getFirstName(),
+        driver.getLastName(),
+        driver.getPhoneNumber(),
+        driver.getIsActive()
+    );
+  }
 }

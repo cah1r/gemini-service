@@ -21,13 +21,12 @@ import static java.lang.Boolean.TRUE;
 class DriverService {
 
   private final DriverRepository driverRepository;
-  private final DriverMapper driverMapper;
 
   List<DriverDto> getAllDrivers() {
     return driverRepository
         .findAll()
         .stream()
-        .map(driverMapper::toDriverDto)
+        .map(DriverMapper::toDriverDto)
         .toList();
   }
 
@@ -41,7 +40,7 @@ class DriverService {
         });
 
     return driverRepository
-        .save(driverMapper.toDriver(createDriverDto))
+        .save(DriverMapper.toDriver(createDriverDto))
         .getId();
   }
 
