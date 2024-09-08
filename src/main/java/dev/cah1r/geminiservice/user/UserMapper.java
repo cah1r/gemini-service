@@ -20,13 +20,13 @@ public class UserMapper {
   }
 
   public static User toUser(CreateUserDto dto, String encryptedPassword) {
-    return User.builder()
-        .email(dto.email())
-        .firstName((dto.firstName()))
-        .lastName(dto.lastName())
-        .phoneNumber(dto.phoneNumber())
-        .password(encryptedPassword)
-        .role(Role.USER)
-        .build();
+    User user = new User();
+    user.setEmail(dto.email());
+    user.setFirstName((dto.firstName()));
+    user.setLastName(dto.lastName());
+    user.setPhoneNumber(dto.phoneNumber());
+    user.setPassword(encryptedPassword);
+    user.setRole(Role.USER);
+    return user;
   }
 }

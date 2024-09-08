@@ -1,13 +1,13 @@
 package dev.cah1r.geminiservice.user;
 
+import dev.cah1r.geminiservice.user.dto.UserDataDto;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.UUID;
 
-@Slf4j
 @RequestMapping("/api/v1/users")
 @RestController
 @RequiredArgsConstructor
@@ -15,13 +15,8 @@ class UserController {
     
     private final UserService userService;
 
-    @PostMapping("/{userId}/address/")
-    Address addCustomerAddress(@PathVariable UUID userId, @RequestBody Address address) {
-        return null;
-    }
-
     @GetMapping
-    List<User> getAllUsers() {
+    List<UserDataDto> getAllUsers() {
         return userService.getAllUsers();
     }
 }
