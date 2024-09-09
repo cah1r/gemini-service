@@ -13,11 +13,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static dev.cah1r.geminiservice.transit.stop.dto.CreateStopDto.toBusStop;
+import static dev.cah1r.geminiservice.transit.stop.dto.CreateStopDto.toStop;
 
 @Slf4j
 @Service
@@ -27,8 +26,8 @@ public class StopService {
   private final StopRepository stopRepository;
 
   @Transactional
-  public Stop createStop(@RequestBody CreateStopDto createStopDto) {
-    return stopRepository.save(toBusStop(createStopDto));
+  public Long createStop(@RequestBody CreateStopDto createStopDto) {
+    return stopRepository.save(toStop(createStopDto)).getId();
   }
 
   @Transactional

@@ -5,7 +5,7 @@ import dev.cah1r.geminiservice.transit.stop.Stop;
 
 public record CreateStopDto(String town, String details, Line line, Integer lineOrder) {
 
-  public static Stop toBusStop(CreateStopDto dto) {
+  public static Stop toStop(CreateStopDto dto) {
     return Stop.builder()
         .town(dto.town())
         .details(dto.details())

@@ -5,8 +5,10 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.NaturalId;
 
+import java.util.HashSet;
 import java.util.Set;
 
+import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
@@ -30,7 +32,12 @@ public class Line {
   private String description;
 
   @ToString.Exclude
-  @OneToMany(fetch = LAZY, mappedBy = "line")
-  private Set<Stop> lineStops;
+  @OneToMany(
+      fetch = LAZY,
+      mappedBy = "line",
+      cascade = ALL,
+      orphanRemoval = true
+  )
+  private Set<Stop> lineStops = new HashSet<>();
 
 }

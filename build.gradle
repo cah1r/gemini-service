@@ -34,6 +34,7 @@ dependencies {
 
 	runtimeOnly 'org.postgresql:postgresql'
 	runtimeOnly 'org.springframework.boot:spring-boot-docker-compose'
+	runtimeOnly 'io.netty:netty-resolver-dns-native-macos:4.1.113.Final'
 
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
@@ -51,6 +52,7 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 	testRuntimeOnly 'com.h2database:h2'
+	testRuntimeOnly 'io.netty:netty-resolver-dns-native-macos:4.1.113.Final'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webflux'

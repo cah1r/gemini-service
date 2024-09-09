@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-class LineService {
+public class LineService {
 
   private final LineRepository lineRepository;
 
