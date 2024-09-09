@@ -1,5 +1,6 @@
 package dev.cah1r.geminiservice.transit.route;
 
+import dev.cah1r.geminiservice.error.exception.RouteNotFoundException;
 import dev.cah1r.geminiservice.transit.route.dto.CreateRouteDto;
 import dev.cah1r.geminiservice.transit.route.dto.RouteDto;
 import dev.cah1r.geminiservice.transit.stop.Stop;
@@ -49,7 +50,10 @@ public class RouteService {
 
   @Transactional
   public void deleteRoute(UUID id) {
-    routeRepository.deleteById(id);
+    routeRepository.findById(id).ifPresentOrElse(
+        routeRepository::delete,
+            () -> { throw new RouteNotFoundException(id); }
+    );
     log.info("[{}] Route has been deleted", id);
   }
 }
