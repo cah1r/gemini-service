@@ -108,6 +108,16 @@ CREATE TABLE users
     UNIQUE (address_id)
 );
 
+CREATE TABLE cars
+(
+    id           BIGINT AUTO_INCREMENT PRIMARY KEY,
+    registration VARCHAR(10) NOT NULL UNIQUE,
+    capacity     INTEGER     NOT NULL,
+    id_number    INTEGER,
+    name         VARCHAR(50),
+    created_tsp  TIMESTAMP
+);
+
 ALTER TABLE payments
     ADD CONSTRAINT fk_payments_ticket_id FOREIGN KEY (ticket_id) REFERENCES tickets (id);
 ALTER TABLE routes
