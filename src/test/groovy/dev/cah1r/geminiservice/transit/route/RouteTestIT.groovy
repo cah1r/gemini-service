@@ -1,8 +1,13 @@
 package dev.cah1r.geminiservice.transit.route
 
+import dev.cah1r.geminiservice.transit.line.Line
+import dev.cah1r.geminiservice.transit.line.LineRepository
 import dev.cah1r.geminiservice.transit.route.dto.CreateRouteDto
 import dev.cah1r.geminiservice.transit.route.dto.RouteStatusDto
+import dev.cah1r.geminiservice.transit.route.dto.RouteViewDto
 import dev.cah1r.geminiservice.transit.route.dto.TicketAvailabilityDto
+import dev.cah1r.geminiservice.transit.stop.Stop
+import dev.cah1r.geminiservice.transit.stop.StopRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
@@ -18,12 +23,14 @@ import static org.springframework.http.MediaType.APPLICATION_JSON
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 class RouteTestIT extends Specification {
 
-    static def ROUTES_URI = "/api/v1/routes"
+    def apiUrl = "/api/v1/routes"
 
     @Autowired WebTestClient webTestClient
     @Autowired RouteService routeService
     @Autowired RouteStatusService routeStatusService
     @Autowired RouteRepository routeRepository
+    @Autowired LineRepository lineRepository
+    @Autowired StopRepository stopRepository
 
     def 'should create new route'() {
         given:
@@ -31,7 +38,7 @@ class RouteTestIT extends Specification {
 
         when:
         def result = webTestClient.post()
-                .uri(ROUTES_URI)
+                .uri(apiUrl)
                 .contentType(APPLICATION_JSON)
                 .bodyValue(dto)
                 .exchange()
@@ -59,7 +66,7 @@ class RouteTestIT extends Specification {
 
         when:
         def result = webTestClient.post()
-                .uri(ROUTES_URI)
+                .uri(apiUrl)
                 .contentType(APPLICATION_JSON)
                 .bodyValue(dto)
                 .exchange()
@@ -82,7 +89,7 @@ class RouteTestIT extends Specification {
         def statusDto = new RouteStatusDto(routeId, !routeDto.isActive())
 
         when:
-        def result = webTestClient.patch().uri("${ROUTES_URI}/${routeId}/set-status")
+        def result = webTestClient.patch().uri("${apiUrl}/${routeId}/set-status")
                 .contentType(APPLICATION_JSON)
                 .bodyValue(statusDto)
                 .exchange()
@@ -106,7 +113,7 @@ class RouteTestIT extends Specification {
         when:
         def result = webTestClient
                 .patch()
-                .uri("${ROUTES_URI}/${routeId}/set-status")
+                .uri("${apiUrl}/${routeId}/set-status")
                 .contentType(APPLICATION_JSON)
                 .bodyValue(statusDto)
                 .exchange()
@@ -123,7 +130,7 @@ class RouteTestIT extends Specification {
         when:
         def result = webTestClient
                 .delete()
-                .uri("${ROUTES_URI}/${routeId}")
+                .uri("${apiUrl}/${routeId}")
                 .exchange()
 
         then:
@@ -140,7 +147,7 @@ class RouteTestIT extends Specification {
         when:
         def result = webTestClient
                 .delete()
-                .uri("${ROUTES_URI}/${routeId}")
+                .uri("${apiUrl}/${routeId}")
                 .exchange()
 
         then:
@@ -159,7 +166,7 @@ class RouteTestIT extends Specification {
         def statusDto = new TicketAvailabilityDto(false)
 
         when:
-        def result = webTestClient.patch().uri("${ROUTES_URI}/${routeId}/set-ticket-availability")
+        def result = webTestClient.patch().uri("${apiUrl}/${routeId}/set-ticket-availability")
                 .contentType(APPLICATION_JSON)
                 .bodyValue(statusDto)
                 .exchange()
@@ -183,13 +190,39 @@ class RouteTestIT extends Specification {
         def statusDto = new TicketAvailabilityDto(false)
 
         when:
-        def result = webTestClient.patch().uri("${ROUTES_URI}/${routeId}/set-ticket-availability")
+        def result = webTestClient.patch().uri("${apiUrl}/${routeId}/set-ticket-availability")
                 .contentType(APPLICATION_JSON)
                 .bodyValue(statusDto)
                 .exchange()
 
         then:
         result.expectStatus().isNotFound()
+    }
+
+    def 'should return route with matching bus stops'() {
+        given: 'test data for route'
+        def line = lineRepository.save(Line.builder().description('Circuit de Monaco').build())
+        def origin = stopRepository.save(Stop.builder().town('Monaco').details('Sainte Devote').line(line).lineOrder(1).build())
+        def destination = stopRepository.save(Stop.builder().town('Monaco').details('Grand Hotel Hairpin').line(line).lineOrder(6).build())
+        def route = routeRepository.save(new Route(null, true, BigDecimal.valueOf(16), origin, destination, true))
+
+        when: 'endpoint to get route with given params is triggered'
+        def response = webTestClient.get()
+                .uri("${apiUrl}?lineId=${line.getId()}&stopAId=${origin.getId()}&stopBId=${destination.getId()}")
+                .exchange()
+
+        then: '200 OK http status in response and RouteVieDto in response body'
+        def dto = response
+                .expectStatus().isOk()
+                .expectBody(RouteViewDto).returnResult().responseBody
+
+        and: 'id in response is the same as in dto'
+        dto.id() == route.getId()
+
+        cleanup:
+        routeRepository.delete(route)
+        stopRepository.deleteAll([origin, destination])
+        lineRepository.delete(line)
     }
 
     def 'should return all saved routes'() {
@@ -206,7 +239,7 @@ class RouteTestIT extends Specification {
 
         when:
         def result = webTestClient.get()
-                .uri { uriBuilder -> uriBuilder.path(ROUTES_URI)
+                .uri { uriBuilder -> uriBuilder.path(apiUrl)
                             .queryParam('keyword', null)
                             .queryParam('size', 10)
                             .queryParam('page', 0)
@@ -218,6 +251,9 @@ class RouteTestIT extends Specification {
                 .expectBody()
                 .jsonPath('page.totalElements').isEqualTo(2)
                 .jsonPath('page.totalPages').isEqualTo(1)
+
+        cleanup:
+        routeRepository.deleteAllById([id1, id2])
     }
 
 

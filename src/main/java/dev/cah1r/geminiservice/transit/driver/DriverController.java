@@ -32,7 +32,7 @@ class DriverController {
     UUID id = driverService.createDriver(createDriverDto);
     log.info("[{}] Successfully created driver {} {}", id, createDriverDto.firstName(), createDriverDto.lastName());
 
-    return ResponseEntity.created(URI.create(format("/api/v1/admin/drivers/%s", id))).build();
+    return ResponseEntity.created(URI.create(format("/api/v1/admin/drivers/%s", id))).body(id);
   }
 
   @DeleteMapping("/{id}")

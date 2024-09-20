@@ -13,10 +13,10 @@ CREATE TABLE addresses
 
 CREATE TABLE drivers
 (
-    id         UUID         NOT NULL,
-    first_name VARCHAR(255) NOT NULL,
-    last_name  VARCHAR(255) NOT NULL,
-    phone      VARCHAR(255) NOT NULL,
+    id           UUID         NOT NULL,
+    first_name   VARCHAR(255) NOT NULL,
+    last_name    VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
 );
 
@@ -82,15 +82,6 @@ CREATE TABLE tickets
     UNIQUE (auth_code)
 );
 
-CREATE TABLE tickets_bundles
-(
-    id               UUID           NOT NULL,
-    price            DECIMAL(38, 2) NOT NULL,
-    route_id         UUID           NOT NULL,
-    tickets_quantity INTEGER        NOT NULL,
-    PRIMARY KEY (id)
-);
-
 CREATE TABLE users
 (
     id           UUID         NOT NULL,
@@ -116,6 +107,21 @@ CREATE TABLE cars
     id_number    INTEGER,
     name         VARCHAR(50),
     created_tsp  TIMESTAMP
+);
+
+CREATE TABLE tickets_bundles
+(
+    id               UUID           NOT NULL,
+    tickets_quantity INTEGER        NOT NULL,
+    price            DECIMAL(38, 2) NOT NULL,
+    is_active        BOOLEAN,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE tickets_bundle_route
+(
+    tickets_bundle_id UUID,
+    route_id          UUID
 );
 
 ALTER TABLE payments

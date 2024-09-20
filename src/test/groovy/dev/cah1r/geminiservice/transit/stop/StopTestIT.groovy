@@ -3,7 +3,6 @@ package dev.cah1r.geminiservice.transit.stop
 import dev.cah1r.geminiservice.transit.line.Line
 import dev.cah1r.geminiservice.transit.line.LineRepository
 import dev.cah1r.geminiservice.transit.line.LineService
-import dev.cah1r.geminiservice.transit.line.dto.CreateLineDto
 import dev.cah1r.geminiservice.transit.stop.dto.CreateStopDto
 import dev.cah1r.geminiservice.transit.stop.dto.StopByLineDto
 import org.springframework.beans.factory.annotation.Autowired
@@ -46,7 +45,7 @@ class StopTestIT extends Specification {
         result.expectStatus().isCreated()
 
         and: 'Location header contains the URI of the newly created stop'
-        def locationUri = result.expectHeader().value('Location', { location ->
+        result.expectHeader().value('Location', { location ->
             assert location.contains('/api/v1/admin/stops/')
         })
 
@@ -132,6 +131,40 @@ class StopTestIT extends Specification {
         stopRepository.findById(stopId_1).get().getLineOrder() == 1
         stopRepository.findById(stopId_2).get().getLineOrder() == 3
         stopRepository.findById(stopId_3).get().getLineOrder() == 2
+
+        cleanup:
+        stopRepository.deleteAllById([stopId_1, stopId_2, stopId_3])
+        lineRepository.delete(line)
+    }
+
+    def 'should return 404 in response on updated non existing stop'() {
+        given: 'line for stops'
+        def line = lineRepository.save(new Line(null, 'Circuit de Monaco', Set.of()))
+
+        and: 'existing stops in db'
+        def stopId_1 = stopService.createStop(new CreateStopDto('Monaco', 'Sainte Devote', line, 1))
+
+
+        and: 'non existing stopto update'
+        def dto = [new StopByLineDto(1111, 'Monaco', 'Sainte Devote', 2, line.getId())]
+
+        when: 'update stops endpoint is called'
+        def result = webTestClient
+                .put()
+                .uri(STOP_URI)
+                .contentType(APPLICATION_JSON)
+                .bodyValue(dto)
+                .exchange()
+
+        then: 'status is 200 OK and body is empty'
+        result.expectStatus().isNotFound()
+
+        and: 'line order of existing stop has NOT been updated'
+        stopRepository.findById(stopId_1).get().getLineOrder() == 1
+
+        cleanup:
+        stopRepository.deleteById(stopId_1)
+        lineRepository.delete(line)
     }
 
 

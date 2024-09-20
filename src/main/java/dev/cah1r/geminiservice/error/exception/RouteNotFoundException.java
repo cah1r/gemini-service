@@ -7,4 +7,8 @@ public class RouteNotFoundException extends EntityNotFoundException {
   public RouteNotFoundException(UUID id) {
     super(id.toString());
   }
+
+  public RouteNotFoundException(String message) {
+    super(message);
+  }
 }

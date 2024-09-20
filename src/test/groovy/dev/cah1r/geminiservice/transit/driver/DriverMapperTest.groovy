@@ -1,5 +1,6 @@
 package dev.cah1r.geminiservice.transit.driver
 
+import dev.cah1r.geminiservice.helpers.DriverProvider
 import dev.cah1r.geminiservice.transit.driver.dto.CreateDriverDto
 import spock.lang.Specification
 
@@ -21,7 +22,7 @@ class DriverMapperTest extends Specification {
 
     def 'should properly map Driver to DriverDto'() {
         given:
-        def driver = DriverUtils.getTestDriver1()
+        def driver = DriverProvider.getTestDriver1()
 
         when:
         def result = DriverMapper.toDriverDto(driver)

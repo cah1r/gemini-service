@@ -3,6 +3,7 @@ package dev.cah1r.geminiservice.transit.route;
 import dev.cah1r.geminiservice.error.exception.RouteNotFoundException;
 import dev.cah1r.geminiservice.transit.route.dto.CreateRouteDto;
 import dev.cah1r.geminiservice.transit.route.dto.RouteDto;
+import dev.cah1r.geminiservice.transit.route.dto.RouteViewDto;
 import dev.cah1r.geminiservice.transit.stop.Stop;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,10 @@ public class RouteService {
         .map(RouteMapper::toRouteDto);
   }
 
+  public Route findRouteById(UUID id) {
+    return routeRepository.findById(id).orElseThrow(() -> new RouteNotFoundException(id));
+  }
+
   @Transactional
   public UUID createRoute(CreateRouteDto dto) {
     Map<Long, Stop> stops = stopsForRouteService.getStopsForRoute(dto);
@@ -55,5 +60,11 @@ public class RouteService {
             () -> { throw new RouteNotFoundException(id); }
     );
     log.info("[{}] Route has been deleted", id);
+  }
+
+  public RouteViewDto findRouteByStopsId(Long lineId, Long originStopId, Long destinationStopId) {
+    return routeRepository.findRouteByStopsIds(lineId, originStopId, destinationStopId)
+        .map(RouteMapper::toRouteViewDto)
+        .orElseThrow(() -> new RouteNotFoundException("Couldn't find route for given stops."));
   }
 }

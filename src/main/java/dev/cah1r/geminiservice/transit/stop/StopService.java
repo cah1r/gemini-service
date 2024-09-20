@@ -3,7 +3,6 @@ package dev.cah1r.geminiservice.transit.stop;
 import dev.cah1r.geminiservice.error.exception.StopNotFoundException;
 import dev.cah1r.geminiservice.transit.stop.dto.CreateStopDto;
 import dev.cah1r.geminiservice.transit.stop.dto.StopByLineDto;
-import dev.cah1r.geminiservice.transit.stop.dto.StopDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,13 +35,6 @@ public class StopService {
       throw new StopNotFoundException(id);
     }
     stopRepository.deleteById(id);
-  }
-
-  List<StopDto> getAllBusStops() {
-    return stopRepository.findAll()
-        .stream()
-        .map(StopMapper::toStopDto)
-        .toList();
   }
 
   public List<StopByLineDto> getAllBusStopsByLine(Long lineId) {
