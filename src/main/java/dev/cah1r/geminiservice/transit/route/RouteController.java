@@ -1,9 +1,6 @@
 package dev.cah1r.geminiservice.transit.route;
 
-import dev.cah1r.geminiservice.transit.route.dto.CreateRouteDto;
-import dev.cah1r.geminiservice.transit.route.dto.RouteDto;
-import dev.cah1r.geminiservice.transit.route.dto.RouteStatusDto;
-import dev.cah1r.geminiservice.transit.route.dto.TicketAvailabilityDto;
+import dev.cah1r.geminiservice.transit.route.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +21,14 @@ public class RouteController {
     return ResponseEntity.ok(routeService.createRoute(createRouteDto));
   }
 
-  @GetMapping
+  @GetMapping(params = {"keyword", "page", "size"})
   Page<RouteDto> getAllRoutes(@RequestParam String keyword, @RequestParam int page, @RequestParam int size) {
     return routeService.getAllRoutes(keyword, page, size);
+  }
+
+  @GetMapping(params = {"lineId", "stopAId", "stopBId"})
+  RouteViewDto findRouteForStops(@RequestParam Long lineId, @RequestParam Long stopAId, @RequestParam Long stopBId) {
+    return routeService.findRouteByStopsId(lineId, stopAId, stopBId);
   }
 
   @PatchMapping("/{id}/set-status")

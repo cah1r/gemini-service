@@ -2,6 +2,7 @@ package dev.cah1r.geminiservice.transit.route;
 
 import dev.cah1r.geminiservice.transit.route.dto.CreateRouteDto;
 import dev.cah1r.geminiservice.transit.route.dto.RouteDto;
+import dev.cah1r.geminiservice.transit.route.dto.RouteViewDto;
 import dev.cah1r.geminiservice.transit.stop.Stop;
 import dev.cah1r.geminiservice.transit.stop.StopMapper;
 import lombok.NoArgsConstructor;
@@ -30,5 +31,15 @@ public class RouteMapper {
         .isActive(createRouteDto.isActive())
         .isTicketAvailable(createRouteDto.isTicketAvailable())
         .build();
+  }
+
+  public static RouteViewDto toRouteViewDto(Route route) {
+    return new RouteViewDto(
+        route.getId(),
+        route.getStartStop().getTown(),
+        route.getStartStop().getDetails(),
+        route.getEndStop().getTown(),
+        route.getEndStop().getDetails()
+    );
   }
 }

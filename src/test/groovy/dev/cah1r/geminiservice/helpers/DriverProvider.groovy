@@ -1,8 +1,10 @@
-package dev.cah1r.geminiservice.transit.driver
+package dev.cah1r.geminiservice.helpers
+
+import dev.cah1r.geminiservice.transit.driver.Driver
 
 import static java.util.UUID.randomUUID
 
-class DriverUtils {
+class DriverProvider {
 
     static Driver getTestDriver1() {
         new Driver(

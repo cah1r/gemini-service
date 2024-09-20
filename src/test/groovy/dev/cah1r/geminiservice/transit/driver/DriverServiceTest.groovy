@@ -7,8 +7,8 @@ import dev.cah1r.geminiservice.transit.driver.dto.DriverStatusDto
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static dev.cah1r.geminiservice.transit.driver.DriverUtils.getTestDriver2
-import static dev.cah1r.geminiservice.transit.driver.DriverUtils.testDriver1
+import static dev.cah1r.geminiservice.helpers.DriverProvider.getTestDriver2
+import static dev.cah1r.geminiservice.helpers.DriverProvider.testDriver1
 import static java.util.UUID.randomUUID
 
 class DriverServiceTest extends Specification {
