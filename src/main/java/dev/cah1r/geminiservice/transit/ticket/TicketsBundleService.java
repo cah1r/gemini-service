@@ -3,6 +3,7 @@ package dev.cah1r.geminiservice.transit.ticket;
 import dev.cah1r.geminiservice.error.exception.TicketsBundleNotFoundException;
 import dev.cah1r.geminiservice.transit.route.Route;
 import dev.cah1r.geminiservice.transit.route.RouteService;
+import dev.cah1r.geminiservice.transit.ticket.dto.BundleStatusDto;
 import dev.cah1r.geminiservice.transit.ticket.dto.CreateTicketsBundleDto;
 import dev.cah1r.geminiservice.transit.ticket.dto.TicketsBundleDto;
 import jakarta.transaction.Transactional;
@@ -52,5 +53,14 @@ public class TicketsBundleService {
                 ticketsBundleRepository::delete,
                 () -> { throw new TicketsBundleNotFoundException(id); }
             );
+  }
+
+  @Transactional
+  public void setActiveStatus(UUID id, BundleStatusDto request) {
+    ticketsBundleRepository.findById(id)
+        .ifPresentOrElse(
+            bundle -> bundle.setIsActive(request.isActive()),
+            () -> { throw new TicketsBundleNotFoundException(id); }
+        );
   }
 }

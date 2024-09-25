@@ -9,10 +9,12 @@ import dev.cah1r.geminiservice.transit.route.RouteService
 import dev.cah1r.geminiservice.transit.route.dto.CreateRouteDto
 import dev.cah1r.geminiservice.transit.stop.Stop
 import dev.cah1r.geminiservice.transit.stop.StopRepository
+import dev.cah1r.geminiservice.transit.ticket.dto.BundleStatusDto
 import dev.cah1r.geminiservice.transit.ticket.dto.CreateTicketsBundleDto
 import dev.cah1r.geminiservice.transit.ticket.dto.TicketsBundleDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 import spock.lang.Specification
@@ -129,6 +131,31 @@ class TicketsBundleTestIT extends Specification {
 
         then: '204 NO CONTENT http status in response'
         response.expectStatus().isNotFound()
+    }
+
+    def 'should succesfully change tickets bundle status'() {
+        given: 'test data'
+        def line = lineRepository.save(new Line(null, 'Circuit de Monaco', null))
+        def origin = stopRepository.save(new Stop(123, 'Monaco', 'Sainte Devote', null, null, line, 1, null))
+        def destination = stopRepository.save(new Stop(129, 'Monaco', 'Grand Hotel Hairpin', null, null, line, 6, null))
+        def route = routeRepository.save(new Route(null, true, BigDecimal.valueOf(16), origin, destination, true))
+        def bundleId = ticketsBundleRepository.save(new TicketsBundle(null, Set.of(route), 16, BigDecimal.valueOf(213.7), true)).getId()
+
+        when:
+        webTestClient.patch()
+                .uri("${apiUrl}/${bundleId}/set-active-status")
+                .contentType(APPLICATION_JSON)
+                .bodyValue(new BundleStatusDto(false))
+                .exchange()
+
+        then:
+        ticketsBundleRepository.findById(bundleId).get().getIsActive() == false
+
+        cleanup:
+        ticketsBundleRepository.deleteById(bundleId)
+        routeRepository.delete(route)
+        stopRepository.deleteAll([origin, destination])
+        lineRepository.delete(line)
     }
 
 }
