@@ -1,5 +1,6 @@
 package dev.cah1r.geminiservice.transit.ticket;
 
+import dev.cah1r.geminiservice.transit.ticket.dto.BundleStatusDto;
 import dev.cah1r.geminiservice.transit.ticket.dto.CreateTicketsBundleDto;
 import dev.cah1r.geminiservice.transit.ticket.dto.TicketsBundleDto;
 import lombok.RequiredArgsConstructor;
@@ -39,5 +40,11 @@ public class TicketsBundleController {
   ResponseEntity<Void> deleteTicketsBundle(@RequestParam UUID id) {
     ticketsBundleService.deleteTicketsBundleById(id);
     return ResponseEntity.noContent().build();
+  }
+
+  @PatchMapping("/{id}/set-active-status")
+  ResponseEntity<Void> setActiveStatus(@PathVariable UUID id, @RequestBody BundleStatusDto request) {
+    ticketsBundleService.setActiveStatus(id, request);
+    return ResponseEntity.ok().build();
   }
 }

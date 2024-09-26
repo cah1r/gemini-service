@@ -1,14 +1,11 @@
 package dev.cah1r.geminiservice.transit.ticket
 
 
-import dev.cah1r.geminiservice.transit.line.Line
 import dev.cah1r.geminiservice.transit.line.LineRepository
-import dev.cah1r.geminiservice.transit.route.Route
 import dev.cah1r.geminiservice.transit.route.RouteRepository
 import dev.cah1r.geminiservice.transit.route.RouteService
-import dev.cah1r.geminiservice.transit.route.dto.CreateRouteDto
-import dev.cah1r.geminiservice.transit.stop.Stop
 import dev.cah1r.geminiservice.transit.stop.StopRepository
+import dev.cah1r.geminiservice.transit.ticket.dto.BundleStatusDto
 import dev.cah1r.geminiservice.transit.ticket.dto.CreateTicketsBundleDto
 import dev.cah1r.geminiservice.transit.ticket.dto.TicketsBundleDto
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 import spock.lang.Specification
 
+import static java.util.UUID.fromString
 import static java.util.UUID.randomUUID
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 import static org.springframework.http.MediaType.APPLICATION_JSON
@@ -36,9 +34,9 @@ class TicketsBundleTestIT extends Specification {
 
 
     def 'should correctly create new ticket bundle and save it in database'() {
-        given:
-        def routeId = routeService.createRoute(new CreateRouteDto(100002, 100003, BigDecimal.valueOf(16), true, true))
-        def dto = new CreateTicketsBundleDto(100002, 100003, [routeId], 21, BigDecimal.valueOf(213.7), true)
+        given: 'existing route id in db and dto'
+        def routeId = fromString('80814069-0f45-4043-958b-f064bd780656')
+        def dto = new CreateTicketsBundleDto(200002, 200003, [routeId], 21, BigDecimal.valueOf(213.7), true)
 
         when:
         def response = webTestClient.post()
@@ -61,15 +59,11 @@ class TicketsBundleTestIT extends Specification {
 
         cleanup:
         ticketsBundleRepository.deleteById(id)
-        routeRepository.deleteById(routeId)
     }
 
     def 'should get all existing ticket bundles from db'() {
-        given: 'all needed test data'
-        def line = lineRepository.save(new Line(null, 'Circuit de Monaco', null))
-        def origin = stopRepository.save(new Stop(123, 'Monaco', 'Sainte Devote', null, null, line, 1, null))
-        def destination = stopRepository.save(new Stop(129, 'Monaco', 'Grand Hotel Hairpin', null, null, line, 6, null))
-        def route = routeRepository.save(new Route(null, true, BigDecimal.valueOf(16), origin, destination, true))
+        given: 'existing route in db'
+        def route = routeRepository.findById(fromString('80814069-0f45-4043-958b-f064bd780656')).get()
 
         and: 'saved tickets bundles in db'
         def tbIds = ticketsBundleRepository.saveAll([
@@ -77,29 +71,21 @@ class TicketsBundleTestIT extends Specification {
                 new TicketsBundle(null, Set.of(route), 32, BigDecimal.valueOf(399), true)
         ]).collect { it -> it.getId()}
 
-
         when: 'endpoint to get all tickets bundles is triggered'
         def response = webTestClient.get().uri(apiUrl).exchange()
 
-        then: 'http status is 200 OK and response body has 2 TicketsBundleDto'
-        response.expectStatus()
-                .isOk()
-                .expectBodyList(TicketsBundleDto).hasSize(2)
-                .returnResult().responseBody
+        then: 'http status is 200 OK and response body has at least 2 TicketsBundleDtos'
+        response.expectStatus().isOk()
+                .expectBodyList(TicketsBundleDto)
+                .returnResult().responseBody.size() >= tbIds.size()
 
         cleanup:
         ticketsBundleRepository.deleteAllById(tbIds)
-        routeRepository.delete(route)
-        stopRepository.deleteAll([origin, destination])
-        lineRepository.delete(line)
     }
 
     def 'should delete existing tickets bundle'() {
-        given: 'test data'
-        def line = lineRepository.save(new Line(null, 'Circuit de Monaco', null))
-        def origin = stopRepository.save(new Stop(123, 'Monaco', 'Sainte Devote', null, null, line, 1, null))
-        def destination = stopRepository.save(new Stop(129, 'Monaco', 'Grand Hotel Hairpin', null, null, line, 6, null))
-        def route = routeRepository.save(new Route(null, true, BigDecimal.valueOf(16), origin, destination, true))
+        given: 'existing route in db and newly created tickets bundle'
+        def route = routeRepository.findById(fromString('80814069-0f45-4043-958b-f064bd780656')).get()
         def bundleId = ticketsBundleRepository.save(new TicketsBundle(null, Set.of(route), 16, BigDecimal.valueOf(213.7), true)).getId()
 
         and: 'tickets bundles is present in db'
@@ -113,11 +99,6 @@ class TicketsBundleTestIT extends Specification {
 
         and: 'tickets bundle is no longer present in db'
         ticketsBundleRepository.findById(bundleId).isEmpty()
-
-        cleanup:
-        routeRepository.delete(route)
-        stopRepository.deleteAll([origin, destination])
-        lineRepository.delete(line)
     }
 
     def 'should send 404 NOT FOUND in response on delete tickets bundle when id is invalid'() {
@@ -129,6 +110,39 @@ class TicketsBundleTestIT extends Specification {
 
         then: '204 NO CONTENT http status in response'
         response.expectStatus().isNotFound()
+    }
+
+    def 'should successfully set tickets bundle status'() {
+        given:
+        def bundleId = fromString('a3867abb-51b0-476f-ba9f-eaf87c4710d0')
+        def expectedBundleStatus = !ticketsBundleRepository.findById(bundleId).get().getIsActive()
+        def request = new BundleStatusDto(expectedBundleStatus)
+
+        when:
+        def response = webTestClient.patch()
+                .uri("${apiUrl}/${bundleId}/set-active-status")
+                .contentType(APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
+
+        then:
+        response.expectStatus().isOk()
+        ticketsBundleRepository.findById(bundleId).get().getIsActive() == expectedBundleStatus
+    }
+
+    def 'should return 404 NO CONTENT when there is no match by given id'() {
+        given:
+        def bundleId = randomUUID()
+        def request = new BundleStatusDto(true)
+
+        expect:
+        webTestClient.patch()
+                .uri("${apiUrl}/${bundleId}/set-active-status")
+                .contentType(APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
+                .expectStatus()
+                .isNotFound()
     }
 
 }

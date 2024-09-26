@@ -153,3 +153,21 @@ INSERT INTO stops (id, town, details, line_order, line_id)
 VALUES (100002, 'Adventure Bay', 'Paw Patrol Headquarter', 1, 100001);
 INSERT INTO stops (id, town, details, line_order, line_id)
 VALUES (100003, 'Foggy Bottom', 'Humdingers Cave', 2, 100001);
+
+
+INSERT INTO lines (id, description)
+VALUES (200001, 'Autodromo Nazionale di Monza');
+
+INSERT INTO stops (id, town, details, line_order, line_id)
+VALUES (200002, 'Monza', 'Lesmo', 6, 200001);
+INSERT INTO stops (id, town, details, line_order, line_id)
+VALUES (200003, 'Monza', 'Ascari', 8, 200001);
+
+INSERT INTO routes (id, is_active, is_ticket_available, price, end_stop_id, start_stop_id)
+VALUES ('80814069-0f45-4043-958b-f064bd780656', true, true, 11.69, 200003, 200002);
+
+INSERT INTO tickets_bundles (id, tickets_quantity, price, is_active)
+VALUES ('a3867abb-51b0-476f-ba9f-eaf87c4710d0',11, 111, true);
+
+INSERT INTO tickets_bundle_route (tickets_bundle_id, route_id)
+VALUES ('a3867abb-51b0-476f-ba9f-eaf87c4710d0', '80814069-0f45-4043-958b-f064bd780656');
