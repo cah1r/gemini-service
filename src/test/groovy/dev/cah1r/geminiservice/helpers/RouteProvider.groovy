@@ -10,7 +10,7 @@ import static dev.cah1r.geminiservice.helpers.StopProvider.prepareTestStop2
 class RouteProvider {
 
     static CreateRouteDto prepareTestCreateRouteDto() {
-        new CreateRouteDto(100002L, 100003L, BigDecimal.valueOf(23), true, true)
+        new CreateRouteDto(100002L, 100003L, BigDecimal.valueOf(23), true, true, 100001L)
     }
 
     static Route prepareTestRoute() {
@@ -20,6 +20,6 @@ class RouteProvider {
 
         line.setLineStops(Set.of(stop1, stop2))
 
-        new Route(id: UUID.randomUUID(), isTicketAvailable: true, price: BigDecimal.valueOf(23), startStop: stop1, endStop: stop2, isActive: true)
+        new Route(id: UUID.randomUUID(), isTicketAvailable: true, price: BigDecimal.valueOf(23), startStop: stop1, endStop: stop2, isActive: true, lineId: line.getId())
     }
 }

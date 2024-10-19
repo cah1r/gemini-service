@@ -28,12 +28,12 @@ public class RouteService {
   private final StopsForRouteService stopsForRouteService;
 
 
-  Page<RouteDto> getAllRoutes(String keyword, int page, int size) {
+  Page<RouteDto> getAllRoutes(String keyword, Long lineId, int page, int size) {
     Pageable pageable = PageRequest.of(
         page, size, Sort.by("startStop.lineOrder").ascending().and(Sort.by("endStop.lineOrder").descending())
     );
 
-    return routeRepository.getAllRoutesWithStops(keyword, pageable)
+    return routeRepository.getAllRoutesWithStops(keyword, lineId, pageable)
         .map(RouteMapper::toRouteDto);
   }
 

@@ -42,4 +42,6 @@ public class Route {
   @Column(nullable = false)
   private boolean isActive;
 
+  @Column(nullable = false)
+  private Long lineId;
 }

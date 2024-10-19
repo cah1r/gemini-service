@@ -21,7 +21,7 @@ class TicketsBundleMapperTest extends Specification {
         def line = new Line(1L, 'Adventure Bay - Foggy Bottom', null)
         def origin = prepareTestStop1(line)
         def destination = prepareTestStop2(line)
-        def routes = Set.of(new Route(routeId, true, ONE, origin, destination, true))
+        def routes = Set.of(new Route(routeId, true, ONE, origin, destination, true, line.getId()))
 
         and: 'dto to map'
         def dto = new CreateTicketsBundleDto(origin.id, destination.id, [routeId], 12, TEN, true)
@@ -44,7 +44,7 @@ class TicketsBundleMapperTest extends Specification {
         def line = new Line(1L, 'Adventure Bay - Foggy Bottom', null)
         def origin = prepareTestStop1(line)
         def destination = prepareTestStop2(line)
-        def route = new Route(routeId, true, ONE, origin, destination, true)
+        def route = new Route(routeId, true, ONE, origin, destination, true, line.getId())
         def routes = Set.of(route)
 
         def ticketsBundle = new TicketsBundle(bundleId, routes, 69, TEN, true)
