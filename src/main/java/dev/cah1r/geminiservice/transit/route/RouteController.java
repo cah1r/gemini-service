@@ -21,9 +21,9 @@ public class RouteController {
     return ResponseEntity.ok(routeService.createRoute(createRouteDto));
   }
 
-  @GetMapping(params = {"keyword", "page", "size"})
-  Page<RouteDto> getAllRoutes(@RequestParam String keyword, @RequestParam int page, @RequestParam int size) {
-    return routeService.getAllRoutes(keyword, page, size);
+  @GetMapping(params = {"keyword", "lineId", "page", "size"})
+  Page<RouteDto> getAllRoutes(@RequestParam String keyword, @RequestParam long lineId, @RequestParam int page, @RequestParam int size) {
+    return routeService.getAllRoutes(keyword, lineId, page, size);
   }
 
   @GetMapping(params = {"lineId", "stopAId", "stopBId"})

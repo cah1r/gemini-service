@@ -30,6 +30,7 @@ public class RouteMapper {
         .endStop(endStop)
         .isActive(createRouteDto.isActive())
         .isTicketAvailable(createRouteDto.isTicketAvailable())
+        .lineId(createRouteDto.lineId())
         .build();
   }
 

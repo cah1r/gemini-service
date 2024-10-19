@@ -8,7 +8,6 @@ import dev.cah1r.geminiservice.transit.route.dto.RouteViewDto
 import dev.cah1r.geminiservice.transit.route.dto.TicketAvailabilityDto
 import dev.cah1r.geminiservice.transit.stop.Stop
 import dev.cah1r.geminiservice.transit.stop.StopRepository
-import org.hamcrest.Matcher
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
@@ -63,7 +62,7 @@ class RouteTestIT extends Specification {
     @Unroll
     def 'should return NOT_FOUND status when one of the stops do not exists in db'(long originStopId, long destinationStopId) {
         given:
-        def dto = new CreateRouteDto(originStopId, destinationStopId, BigDecimal.valueOf(21.37), true, true)
+        def dto = new CreateRouteDto(originStopId, destinationStopId, BigDecimal.valueOf(21.37), true, true, 100001L)
 
         when:
         def result = webTestClient.post()
@@ -205,7 +204,7 @@ class RouteTestIT extends Specification {
         def line = lineRepository.save(Line.builder().description('Circuit de Monaco').build())
         def origin = stopRepository.save(Stop.builder().town('Monaco').details('Sainte Devote').line(line).lineOrder(1).build())
         def destination = stopRepository.save(Stop.builder().town('Monaco').details('Grand Hotel Hairpin').line(line).lineOrder(6).build())
-        def route = routeRepository.save(new Route(null, true, BigDecimal.valueOf(16), origin, destination, true))
+        def route = routeRepository.save(new Route(null, true, BigDecimal.valueOf(16), origin, destination, true, line.id))
 
         when: 'endpoint to get route with given params is triggered'
         def response = webTestClient.get()
@@ -229,7 +228,7 @@ class RouteTestIT extends Specification {
     def 'should return all saved routes'() {
         given:
         def route1 = getCreateRouteDto()
-        def route2 = new CreateRouteDto(100003, 100002, BigDecimal.valueOf(21.37), true, true)
+        def route2 = new CreateRouteDto(100003, 100002, BigDecimal.valueOf(21.37), true, true, 100001)
 
         and:
         def id1 = routeService.createRoute(route1)
@@ -239,6 +238,7 @@ class RouteTestIT extends Specification {
         def result = webTestClient.get()
                 .uri { uriBuilder -> uriBuilder.path(apiUrl)
                             .queryParam('keyword', null)
+                            .queryParam('lineId', route1.lineId())
                             .queryParam('size', 10)
                             .queryParam('page', 0)
                             .build()
@@ -256,6 +256,6 @@ class RouteTestIT extends Specification {
 
 
     static CreateRouteDto getCreateRouteDto() {
-        new CreateRouteDto(100002, 100003, BigDecimal.valueOf(21.37), true, true)
+        new CreateRouteDto(100002, 100003, BigDecimal.valueOf(21.37), true, true, 100001)
     }
 }

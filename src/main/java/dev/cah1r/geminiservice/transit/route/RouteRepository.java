@@ -17,13 +17,14 @@ public interface RouteRepository extends JpaRepository<Route, UUID> {
       SELECT r FROM Route r
       JOIN FETCH r.startStop origin
       JOIN FETCH r.endStop destination
-      WHERE LOWER(origin.town) LIKE LOWER(CONCAT('%', :keyword, '%'))
+      WHERE r.lineId = :lineId
+      AND (LOWER(origin.town) LIKE LOWER(CONCAT('%', :keyword, '%'))
       OR LOWER(destination.town) LIKE LOWER(CONCAT('%', :keyword, '%'))
       OR LOWER(origin.details) LIKE LOWER(CONCAT('%', :keyword, '%'))
-      OR LOWER(destination.details) LIKE LOWER(CONCAT('%', :keyword, '%'))
+      OR LOWER(destination.details) LIKE LOWER(CONCAT('%', :keyword, '%')))
       ORDER BY origin.lineOrder ASC, destination.lineOrder DESC
       """)
-  Page<Route> getAllRoutesWithStops(@Param("keyword") String keyword, Pageable pageable);
+  Page<Route> getAllRoutesWithStops(@Param("keyword") String keyword, @Param("lineId") long lineId, Pageable pageable);
 
   @Query("""
           SELECT r FROM Route r

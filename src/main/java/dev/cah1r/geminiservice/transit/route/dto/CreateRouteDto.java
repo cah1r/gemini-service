@@ -7,4 +7,5 @@ public record CreateRouteDto(
     Long destinationStopId,
     BigDecimal price,
     boolean isTicketAvailable,
-    boolean isActive) {}
+    boolean isActive,
+    Long lineId) {}
